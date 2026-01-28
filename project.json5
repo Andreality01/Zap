@@ -1,0 +1,27 @@
+{
+    WURPLSVersion: "0.1",
+    
+    Name: "Zap",
+    Type: "Standard",
+    Version: "1.0.0",
+    
+    SourceDirs: [
+        "src"
+    ],
+    
+    IncludeDirs: [
+        "include"
+    ],
+    
+    Targets: {
+        US: {
+            TitleID: "0005000E-10101D00"
+        },
+        EU: {
+            TitleID: "0005000E-10101E00"
+        },
+        JP: {
+            TitleID: "0005000E-10101C00"
+        }
+    }
+}
