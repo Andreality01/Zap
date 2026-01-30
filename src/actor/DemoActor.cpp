@@ -1,9 +1,7 @@
 #include "actor/ActorBase.h"
 #include "actor/ActorCreateParam.h"
-#include "dynamic_libs/os_functions.h"
 #include "red/registry/Registrar.h"
-#include "red/registry/builder/ProfileCreateBuilder.h"
-
+#include <red/util/Log.h>
 #include <graphics/AnimModel.h>
 #include <graphics/Renderer.h>
 
@@ -18,12 +16,12 @@ namespace zap {
         DemoActor(const ActorCreateParam& param)
             : Actor(param)
         {
-            OSReport("DEMOACTOR CTOR!!!\n");
+            red::print("DEMOACTOR CTOR!!!\n");
         }
         
     private:
         Result create_() override {
-            OSReport("DemoActor created!!\n");
+            red::print("DemoActor created!!\n");
             
             mModel = AnimModel::create("star_coin", "star_coinA", 0, 0, 0, 0, 0, Model::cBoundingMode_Disable, nullptr);
             
@@ -31,7 +29,7 @@ namespace zap {
         }
         
         bool execute_() override {
-            OSReport("EXECUTING\n");
+            red::print("EXECUTING\n");
             
             mAngle.y() += 0x8000000;
             
@@ -45,7 +43,7 @@ namespace zap {
         }
 
         bool draw_() override {
-            OSReport("DRAWING\n");
+            red::print("DRAWING\n");
             
             Renderer::instance()->drawModel(mModel);
             
