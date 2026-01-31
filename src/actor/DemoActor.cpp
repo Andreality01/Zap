@@ -15,22 +15,15 @@ namespace zap {
         
         DemoActor(const ActorCreateParam& param)
             : Actor(param)
-        {
-            red::print("DEMOACTOR CTOR!!!\n");
-        }
-        
+        { }
+    
     private:
         Result create_() override {
-            red::print("DemoActor created!!\n");
-            
             mModel = AnimModel::create("star_coin", "star_coinA", 0, 0, 0, 0, 0, Model::cBoundingMode_Disable, nullptr);
-            
             return cResult_Success;
         }
         
         bool execute_() override {
-            red::print("EXECUTING\n");
-            
             mAngle.y() += 0x8000000;
             
             sead::Matrix34f mtx;
@@ -43,10 +36,7 @@ namespace zap {
         }
 
         bool draw_() override {
-            red::print("DRAWING\n");
-            
             Renderer::instance()->drawModel(mModel);
-            
             return true;
         }
         
