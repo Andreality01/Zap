@@ -19,19 +19,14 @@ namespace zap {
     
     private:
         Result create_() override {
-            mModel = AnimModel::create("star_coin", "star_coinA", 0, 0, 0, 0, 0, Model::cBoundingMode_Disable, nullptr);
+            mModel = AnimModel::create("switch_koopa", "boss_koopa_ax", 0, 0, 0, 0, 0, Model::cBoundingMode_Disable, nullptr);
+            updateModel();
             return cResult_Success;
         }
         
         bool execute_() override {
             mAngle.y() += 0x8000000;
-            
-            sead::Matrix34f mtx;
-            mtx.makeRTIdx(mAngle, mPos);
-            mModel->getModel()->setMtxRT(mtx);
-            mModel->getModel()->setScale(sead::Vector3f(1,1,1));
-            mModel->calcMdl();
-            
+            updateModel();
             return true;
         }
 
@@ -40,12 +35,20 @@ namespace zap {
             return true;
         }
         
+        void updateModel() {
+            sead::Matrix34f mtx;
+            mtx.makeRTIdx(mAngle, mPos);
+            mModel->getModel()->setMtxRT(mtx);
+            mModel->getModel()->setScale(sead::Vector3f(1,1,1));
+            mModel->calcMdl();
+        }
+        
         AnimModel* mModel;
     };
 
 }
 
-Profile* zap::DemoActor::cProfile = zap::getRegistrar()->profile<zap::DemoActor>("demo_actor")
-    //.drawPriority(69)
-    //.resources<"star_coin">(ProfileInfo::cResType_Course)
+Profile* zap::DemoActor::cProfile = zap::getRegistrar()->newProfile<zap::DemoActor>("demo_actor")
+    .drawPriority(69)
+    .resources<"bolt", "switch_koopa">(ProfileInfo::cResType_Course)
     .build();

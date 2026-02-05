@@ -10,7 +10,7 @@ _ZN9ActorBaseC2ERK16ActorCreateParam = 0x2002ce0;
 _ZN9ActorBase9sTypeInfoE = 0x101E9CC8;
 _ZN9ActorBaseD1Ev = 0x2002e680;
 _ZN4sead14SafeStringBaseIcE9cNullCharE = 0x10000044;
-
+_ZN15ActorCreateInfo8cDefaultE = 0x100018F4;
 _ZN9ActorBase10preCreate_Ev = 0x2002f7c;
 _ZN9ActorBase11postCreate_ENS_9MainStateE = 0x2002f00;
 _ZN9ActorBase11preExecute_Ev = 0x2002f04;
