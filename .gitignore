@@ -3,3 +3,5 @@
 out
 notes
 compile_commands.json
+.DS_Store
+.vscode
