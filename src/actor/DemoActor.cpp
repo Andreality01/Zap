@@ -18,19 +18,19 @@ namespace zap {
         { }
     
     private:
-        Result create_() override {
+        Result create() override {
             mModel = AnimModel::create("switch_koopa", "boss_koopa_ax", 0, 0, 0, 0, 0, Model::cBoundingMode_Disable, nullptr);
             updateModel();
             return cResult_Success;
         }
         
-        bool execute_() override {
+        bool execute() override {
             mAngle.y() += 0x8000000;
             updateModel();
             return true;
         }
 
-        bool draw_() override {
+        bool draw() override {
             Renderer::instance()->drawModel(mModel);
             return true;
         }
