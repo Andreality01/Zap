@@ -14,7 +14,7 @@
     ],
     
     BuildOptions: [
-        "-DNW_DEBUG"
+        "-DNW_RELEASE"
     ],
     
     Targets: {
