@@ -1,3 +1,5 @@
+@addresses_from "00050000-10101D00"
+
 _ZN4sead22BufferedSafeStringBaseIcE6formatEPKcz = 0x2a0f1e4;
 _ZdlPvm = 0x029F1748;
 _ZdlPv = 0x29f1748;
