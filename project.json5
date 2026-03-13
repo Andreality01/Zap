@@ -16,6 +16,8 @@
     BuildOptions: [
         "-DNW_DEBUG"
     ],
+
+    ConvMapProvider: "RedCore",
     
     Targets: {
         US: {
