@@ -1,4 +1,0 @@
-@addresses_from "00050000-10101D00"
-
-__deleted_virtual_called = 0x2afa5e8;
-_ZNK9ActorBase18getRuntimeTypeInfoEv = __deleted_virtual_called;
