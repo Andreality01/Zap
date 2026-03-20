@@ -1,49 +1,51 @@
+#include <Zap.h>
 #include <enemy/Enemy.h>
 #include <graphics/JointBlendModel.h>
 #include <graphics/SkeletalAnimation.h>
-#include <graphics/Renderer.h>
-#include <Zap.h>
+#include <telkin/Print.h>
 
 namespace zap {
-    
-    class Stingby : public Enemy {
-        SEAD_RTTI_OVERRIDE(Stingby, Enemy)
-        
-    public:
-        static Profile* cProfile;
-        
-        Stingby(const ActorCreateParam& param);
-        ~Stingby() override = default;
-        
-        Result create() override;
-        bool execute() override;
-        bool draw() override;
-        
-        static inline ActorCollisionCheck::CollisionData cCollisionData = {
-            .center_offset = { 0.0f, 0.0f },
-            .half_size = { 8.5f, 8.5f },
-            .shape_type = ActorCollisionCheck::cShapeType_Box,
-            .kind = ActorCollisionCheck::cKind_Enemy,
-            .attack = ActorCollisionCheck::cAttack_None,
-            .vs_kind = ActorCollisionCheck::cTargetKind_Player,
-            .vs_damage = ActorCollisionCheck::cDamageFrom_All,
-            .status = ActorCollisionCheck::cStatus_None,
-            .call_back = &Enemy::normal_collcheck
-        };
-        
-        void vsPlayerHitCheck_Normal(ActorCollisionCheck* cc_self, ActorCollisionCheck* cc_other) override;
-        
-        DECLARE_STATE_ID(Stingby, Idle)
-        DECLARE_STATE_ID(Stingby, Notice)
-        DECLARE_STATE_ID(Stingby, Chase)
-        
-        //DECLARE_STATE_VIRTUAL_ID_OVERRIDE(Stingby, DieFall)
-        DECLARE_STATE_VIRTUAL_ID_OVERRIDE(Stingby, DieOther)
-        
-        JointBlendModel* mModel;
-        sead::Vector3f mIdleCenter;
+
+class Stingby : public Enemy {
+    SEAD_RTTI_OVERRIDE(Stingby, Enemy)
+
+public:
+    static Profile* cProfile;
+
+    Stingby(const ActorCreateParam& param);
+    ~Stingby() override = default;
+
+    Result create() override;
+    bool execute() override;
+    bool draw() override;
+
+    void updateModel();
+
+    static inline ActorCollisionCheck::CollisionData cCollisionData = {
+        .center_offset = { 0.0f, 0.0f },
+        .half_size = { 8.5f, 8.5f },
+        .shape_type = ActorCollisionCheck::cShapeType_Box,
+        .kind = ActorCollisionCheck::cKind_Enemy,
+        .attack = ActorCollisionCheck::cAttack_None,
+        .vs_kind = ActorCollisionCheck::cTargetKind_Player,
+        .vs_damage = ActorCollisionCheck::cDamageFrom_All,
+        .status = ActorCollisionCheck::cStatus_None,
+        .call_back = &Enemy::normal_collcheck
     };
-    
+
+    void vsPlayerHitCheck_Normal(ActorCollisionCheck* cc_self, ActorCollisionCheck* cc_other) override;
+
+    DECLARE_STATE_ID(Stingby, Idle)
+    DECLARE_STATE_ID(Stingby, Notice)
+    DECLARE_STATE_ID(Stingby, Chase)
+
+    // DECLARE_STATE_VIRTUAL_ID_OVERRIDE(Stingby, DieFall)
+    DECLARE_STATE_VIRTUAL_ID_OVERRIDE(Stingby, DieOther)
+
+    JointBlendModel* mModel;
+    sead::Vector3f mIdleCenter;
+};
+
 }
 
 SEAD_RTTI_OVERRIDE_IMPL(zap::Stingby, Enemy)
@@ -62,7 +64,7 @@ zap::Stingby::Stingby(const ActorCreateParam& param)
     : Enemy(param)
 { }
 
-ActorBase::Result zap::Stingby::create() {    
+ActorBase::Result zap::Stingby::create() {
     mModel = JointBlendModel::create("hacchin000", "hacchin000", 2, 0, 0, 0, 0);
     
     mDirection = DirType::cDirType_Right;
@@ -72,34 +74,44 @@ ActorBase::Result zap::Stingby::create() {
     reviveCollisionCheck();
     
     changeState(Stingby::StateID_Idle);
-    
+
+    updateModel();
+
     return cResult_Success;
 }
 
 bool zap::Stingby::execute() {
     executeState();
-    
-    bool alive = true; // TODO: check state
-    if (alive) {
-        sead::Mathu::chase((u32*)&mAngle.y(), cBaseAngleY[mDirection], 0x11FFFFF);
+
+    if (isState(StateID_Idle) || isState(StateID_Notice) || isState(StateID_Chase)) {
+        sead::Mathu::chase((u32*)&mAngle.y(), static_cast<u32>(cBaseAngleY[mDirection]), 0x11FFFFF);
     }
-    
-    sead::Matrix34f mtx;
-    mtx.makeRTIdx(mAngle, mPos);
-    
-    // TODO: forwarders to get rid of this getter
-    mModel->getModel()->setMtxRT(mtx);
-    mModel->getModel()->setScale(mScale);
-    mModel->getModel()->calcMdl();
-    mModel->getModel()->calcAnm();
-    
+
+    updateModel();
+
     return true;
 }
 
+void zap::Stingby::updateModel() {
+    sead::Matrix34f mtx;
+    mtx.makeRTIdx(mAngle, mPos);
+
+    mModel->getModel()->setMtxRT(mtx);
+
+    if (!isState(StateID_Ice)) {
+        mModel->playAnmFrameCtrl();
+    }
+
+    mModel->getModel()->setScale(mScale);
+    mModel->calcBlend();
+
+    mModel->getModel()->calcAnm();
+    mModel->getModel()->calcMdl();
+}
+
 bool zap::Stingby::draw() {
-    // TODO: just make a member func
-    Renderer::instance()->drawModel(mModel);
-    
+    mModel->draw();
+
     return true;
 }
 
@@ -130,7 +142,7 @@ void zap::Stingby::vsPlayerHitCheck_Normal(ActorCollisionCheck* cc_self, ActorCo
 void zap::Stingby::initializeState_Idle() {
     mIdleCenter = mPos;
     mDirection = cDirType_Right;
-    mModel->setAnm("fly_idle", 10.0f);
+    mModel->setAnm("fly_idle", 10.0f, FrameCtrl::cMode_Repeat);
 }
 
 void zap::Stingby::executeState_Idle() {
@@ -159,11 +171,11 @@ void zap::Stingby::finalizeState_Idle() { }
 /** STATE: Notice */
 
 void zap::Stingby::initializeState_Notice() {
-    mModel->setAnm("notice", 3.0f);
+    mModel->setAnm("notice", 3.0f, FrameCtrl::cMode_NoRepeat);
 }
 
 void zap::Stingby::executeState_Notice() {
-    if (mModel->getCurSklAnim()->getFrameCtrl().isEndFrame()) {
+    if (mModel->getCurSklAnim()->getFrameCtrl().isStop()) {
         changeState(StateID_Chase);
     }
 }
@@ -173,13 +185,15 @@ void zap::Stingby::finalizeState_Notice() { }
 /** STATE: Chase */
 
 void zap::Stingby::initializeState_Chase() {
-    mModel->setAnm("fly_dash", 10.0f);
+    mModel->setAnm("fly_dash", 10.0f, FrameCtrl::cMode_Repeat);
 }
 
 void zap::Stingby::executeState_Chase() {
     sead::Vector2f player;
-    searchNearPlayer(player);
-    
+    if (searchNearPlayer(player) == -1) {
+        return;
+    }
+
     if (sead::Mathf::abs(player.x) > 6 * 16) {
         changeState(StateID_Idle);
     }
@@ -193,12 +207,12 @@ void zap::Stingby::finalizeState_Chase() { }
 /** STATE: DieOther */
 
 void zap::Stingby::initializeState_DieOther() {
-    mModel->setAnm("die_squish", 0.0f);
+    mModel->setAnm("die_squish", 0.0f, FrameCtrl::cMode_NoRepeat);
     removeCollisionCheck();
 }
 
 void zap::Stingby::executeState_DieOther() {
-    if (mModel->getCurSklAnim()->getFrameCtrl().isEndFrame()) {
+    if (mModel->getCurSklAnim()->getFrameCtrl().isStop()) {
         deleteRequest();
     }
 }
