@@ -19,6 +19,9 @@ public:
     bool execute() override;
     bool draw() override;
 
+    bool createIceActor() override;
+    void setIceAnm() override;
+    
     void updateModel();
 
     static inline ActorCollisionCheck::CollisionData cCollisionData = {
@@ -27,7 +30,15 @@ public:
         .shape_type = ActorCollisionCheck::cShapeType_Box,
         .kind = ActorCollisionCheck::cKind_Enemy,
         .attack = ActorCollisionCheck::cAttack_None,
-        .vs_kind = ActorCollisionCheck::cTargetKind_Player,
+        .vs_kind = ActorCollisionCheck::TargetKind(
+            ActorCollisionCheck::cTargetKind_Player |
+            ActorCollisionCheck::cTargetKind_Enemy |
+            ActorCollisionCheck::cTargetKind_Item |
+            ActorCollisionCheck::cTargetKind_Tama |
+            ActorCollisionCheck::cTargetKind_ChibiYoshi |
+            ActorCollisionCheck::cTargetKind_Unk10 |
+            ActorCollisionCheck::cTargetKind_DrcTouch
+        ),
         .vs_damage = ActorCollisionCheck::cDamageFrom_All,
         .status = ActorCollisionCheck::cStatus_None,
         .call_back = &Enemy::normal_collcheck
@@ -39,7 +50,6 @@ public:
     DECLARE_STATE_ID(Stingby, Notice)
     DECLARE_STATE_ID(Stingby, Chase)
 
-    // DECLARE_STATE_VIRTUAL_ID_OVERRIDE(Stingby, DieFall)
     DECLARE_STATE_VIRTUAL_ID_OVERRIDE(Stingby, DieOther)
 
     JointBlendModel* mModel;
@@ -54,7 +64,6 @@ CREATE_STATE_ID(zap::Stingby, Idle)
 CREATE_STATE_ID(zap::Stingby, Notice)
 CREATE_STATE_ID(zap::Stingby, Chase)
 CREATE_STATE_VIRTUAL_ID_OVERRIDE(zap::Stingby, Enemy, DieOther)
-//CREATE_STATE_VIRTUAL_ID_OVERRIDE(zap::Stingby, Enemy, DieFall)
 
 Profile* zap::Stingby::cProfile = zap::getRegistrar()->newProfile<zap::Stingby>("stingby")
     .resources<"hacchin000">(ProfileInfo::cResType_Course)
@@ -84,12 +93,29 @@ bool zap::Stingby::execute() {
     executeState();
 
     if (isState(StateID_Idle) || isState(StateID_Notice) || isState(StateID_Chase)) {
-        sead::Mathu::chase((u32*)&mAngle.y(), static_cast<u32>(cBaseAngleY[mDirection]), 0x11FFFFF);
+        mAngle.y().chaseRest(cBaseAngleY[mDirection], 0x2000000);
     }
 
     updateModel();
 
     return true;
+}
+
+bool zap::Stingby::createIceActor() {
+    sead::Vector3f pos(
+        mPos.x,
+        mPos.y - 16.0f,
+        mPos.z
+    );
+    IceInfo info = { 0, pos, sead::Vector3f(1.5f, 1.5f, 1.5f), nullptr };
+    return mIceMgr.createIce(info);
+}
+
+void zap::Stingby::setIceAnm() {
+    if (isState(StateID_Notice)) {
+        mModel->setAnm("fly_idle", 0.0f);
+    }
+    // TODO: Random frame: mModel->getCurSklAnim()->getFrameCtrl().setFrame(0.0f);
 }
 
 void zap::Stingby::updateModel() {
@@ -103,10 +129,7 @@ void zap::Stingby::updateModel() {
     }
 
     mModel->getModel()->setScale(mScale);
-    mModel->calcBlend();
-
-    mModel->getModel()->calcAnm();
-    mModel->getModel()->calcMdl();
+    mModel->calcMdl();
 }
 
 bool zap::Stingby::draw() {
