@@ -1,5 +1,6 @@
 #include <Zap.h>
 #include <enemy/Enemy.h>
+#include <enemy/EnemyEatData.h>
 #include <graphics/JointBlendModel.h>
 #include <graphics/SkeletalAnimation.h>
 #include <telkin/Print.h>
@@ -45,6 +46,7 @@ public:
     };
 
     void vsPlayerHitCheck_Normal(ActorCollisionCheck* cc_self, ActorCollisionCheck* cc_other) override;
+    void vsYoshiHitCheck_Normal(ActorCollisionCheck* cc_self, ActorCollisionCheck* cc_other) override;
 
     DECLARE_STATE_ID(Stingby, Idle)
     DECLARE_STATE_ID(Stingby, Notice)
@@ -54,6 +56,7 @@ public:
 
     JointBlendModel* mModel;
     sead::Vector3f mIdleCenter;
+    EnemyEatData mEatData;
 };
 
 }
@@ -71,6 +74,8 @@ Profile* zap::Stingby::cProfile = zap::getRegistrar()->newProfile<zap::Stingby>(
 
 zap::Stingby::Stingby(const ActorCreateParam& param)
     : Enemy(param)
+    , mIdleCenter(mPos)
+    , mEatData(mActorUniqueID)
 { }
 
 ActorBase::Result zap::Stingby::create() {
@@ -81,6 +86,9 @@ ActorBase::Result zap::Stingby::create() {
     
     mCollisionCheck.set(this, cCollisionData);
     reviveCollisionCheck();
+    
+    mEatDataPtr = &mEatData;
+    mEatData.setEatType(EatData::cEatType_Drink);
     
     changeState(Stingby::StateID_Idle);
 
@@ -155,6 +163,20 @@ void zap::Stingby::vsPlayerHitCheck_Normal(ActorCollisionCheck* cc_self, ActorCo
         }
         
         default: {
+            return Enemy::vsPlayerHitCheck_Normal(cc_self, cc_other);
+        }
+    }
+}
+
+void zap::Stingby::vsYoshiHitCheck_Normal(ActorCollisionCheck* cc_self, ActorCollisionCheck* cc_other) {
+    Actor* other = cc_other->getOwner();
+    
+    switch (fumiCheck(cc_self, cc_other, cFumiSeType_Normal)) {
+        case cFumiType_Fumi: {
+            return setDeathInfo_YoshiFumi(other); // changes state to DieYoshiFumi
+        }
+        
+        case cFumiType_Hit: {
             return Enemy::vsPlayerHitCheck_Normal(cc_self, cc_other);
         }
     }
