@@ -45,8 +45,6 @@ zap::TimeClock::TimeClock(const ActorCreateParam& param)
 { }
 
 ActorBase::Result zap::TimeClock::create() {
-    tk::print("nbyte\n");
-
     // load it first
     // szs name, then model name inside
     mModel = AnimModel::create("timeclock", "timeclockA");
@@ -61,7 +59,7 @@ ActorBase::Result zap::TimeClock::create() {
 }
 
 bool zap::TimeClock::execute() {
-    mAngle.y() -= sead::Mathf::deg2idx(4.0f); // spin 4 degrees per frame
+    mAngle.y() -= sead::Mathf::deg2idx(5.0f); // spin 4 degrees per frame
     updateModel();
 
     return true;
