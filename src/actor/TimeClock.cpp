@@ -32,7 +32,7 @@ ActorCollisionCheck::CollisionData zap::TimeClock::cCollisionData = {
     ),
     .status = ActorCollisionCheck::cStatus_None,
     .callback = [](ActorCollisionCheck* cc_self, ActorCollisionCheck* cc_other) { 
-        TimeClock* self = sead::DynamicCast<TimeClock>(cc_self->getOwner());
+        TimeClock* self = cc_self->getOwner<TimeClock>();
         if (self != nullptr)
             self->collect();
     }
@@ -85,7 +85,7 @@ void zap::TimeClock::collect() {
     EffectCreateUtil::createEffect(RP_FlagPass_1, &effectPos);
     
     // play a sound effect
-    GameAudio::getAudioObjEmy()->startSound("SE_SYS_CONTINUE_DONE", mPos);
+    GameAudio::getAudioObjMap()->startSound("SE_SYS_CONTINUE_DONE", mPos);
     
     // add the time
     u16 timeDelta = mParam0 & 0xFFF; // Nybbles 10-12
@@ -93,4 +93,5 @@ void zap::TimeClock::collect() {
     
     // bye!
     deleteRequest();
+    removeCollisionCheck();
 }
