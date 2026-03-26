@@ -59,7 +59,7 @@ ActorBase::Result zap::TimeClock::create() {
 }
 
 bool zap::TimeClock::execute() {
-    mAngle.y() -= sead::Mathf::deg2idx(5.0f); // spin 4 degrees per frame
+    mAngle.y() -= sead::Mathf::deg2idx(5.0f); // spin 5 degrees per frame
     updateModel();
 
     return true;
