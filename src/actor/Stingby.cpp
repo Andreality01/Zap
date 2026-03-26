@@ -1,4 +1,4 @@
-#include <Zap.h>
+#include <zap/Zap.h>
 #include <enemy/Enemy.h>
 #include <enemy/EnemyEatData.h>
 #include <graphics/JointBlendModel.h>
@@ -42,7 +42,7 @@ public:
         ),
         .vs_damage = ActorCollisionCheck::cDamageFrom_All,
         .status = ActorCollisionCheck::cStatus_None,
-        .call_back = &Enemy::normal_collcheck
+        .callback = &Enemy::normal_collcheck
     };
 
     void vsPlayerHitCheck_Normal(ActorCollisionCheck* cc_self, ActorCollisionCheck* cc_other) override;
