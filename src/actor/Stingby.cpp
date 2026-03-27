@@ -145,9 +145,7 @@ bool zap::Stingby::execute() {
         mWeaveOffset += (weaveTarget - mWeaveOffset) * 0.15f;
 
         // Apply bob and weave together
-        if (!isState(StateID_Ice)) {
-            mPos.y = mSpawnpoint.y + sead::Mathf::sin(mBobPhase) * cBobAmplitude + mWeaveOffset;
-        }
+        mPos.y = mSpawnpoint.y + sead::Mathf::sin(mBobPhase) * cBobAmplitude + mWeaveOffset;
 
         // Aggro puff
         if (mAggroPuffTimer > 0) {
@@ -155,12 +153,13 @@ bool zap::Stingby::execute() {
             const f32 puff = sead::Mathf::sin(t * sead::Mathf::pi()) * 0.04f; // peaks at +0.04
             mScale = sead::Vector3f(cScaleFactor + puff, cScaleFactor + puff, cScaleFactor + puff);
             mAggroPuffTimer--;
+            
+            // Baseline reset on the final frame
+            if (mAggroPuffTimer == 0) {
+                mScale = sead::Vector3f(cScaleFactor, cScaleFactor, cScaleFactor);
+            }
         }
         
-        // Baseline reset on the final frame
-        if (mAggroPuffTimer == 0) {
-            mScale = sead::Vector3f(cScaleFactor, cScaleFactor, cScaleFactor);
-        }
     }
 
     updateModel();
