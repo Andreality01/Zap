@@ -12,25 +12,26 @@ Profile* zap::TimeClock::cProfile = zap::getRegistrar()->newProfile<zap::TimeClo
     .build();
 
 // Hitbox data
+using CC = ActorCollisionCheck;
 ActorCollisionCheck::CollisionData zap::TimeClock::cCollisionData = {
     .center_offset = { 0.0f, 0.0f },
     .half_size = { 12.0f, 12.0f },
-    .shape_type = ActorCollisionCheck::cShapeType_Box,
-    .kind = ActorCollisionCheck::cKind_Item,
-    .attack = ActorCollisionCheck::cAttack_None,
-    .vs_kind = ActorCollisionCheck::TargetKind(
-        ActorCollisionCheck::cTargetKind_Player |
-        ActorCollisionCheck::cTargetKind_Item
+    .shape_type = CC::cShapeType_Box,
+    .kind = CC::cKind_Item,
+    .attack = CC::cAttack_None,
+    .vs_kind = CC::TargetKind(
+        CC::cTargetKind_Player |
+        CC::cTargetKind_Item
     ),
-    .vs_damage = ActorCollisionCheck::DamageFrom(
-        ActorCollisionCheck::cDamageFrom_Slip |
-        ActorCollisionCheck::cDamageFrom_HipAttack |
-        ActorCollisionCheck::cDamageFrom_Shell |
-        ActorCollisionCheck::cDamageFrom_PenguinSlip |
-        ActorCollisionCheck::cDamageFrom_Spin |
-        ActorCollisionCheck::cDamageFrom_SpinFall
+    .vs_damage = CC::DamageFrom(
+        CC::cDamageFrom_Slip |
+        CC::cDamageFrom_HipAttack |
+        CC::cDamageFrom_Shell |
+        CC::cDamageFrom_PenguinSlip |
+        CC::cDamageFrom_Spin |
+        CC::cDamageFrom_SpinFall
     ),
-    .status = ActorCollisionCheck::cStatus_None,
+    .status = CC::cStatus_None,
     .callback = [](ActorCollisionCheck* cc_self, ActorCollisionCheck* cc_other) { 
         TimeClock* self = cc_self->getOwner<TimeClock>();
         if (self != nullptr)
