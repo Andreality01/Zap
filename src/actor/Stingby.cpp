@@ -13,28 +13,28 @@ CREATE_STATE_ID(zap::Stingby, Return)
 CREATE_STATE_VIRTUAL_ID_OVERRIDE(zap::Stingby, Enemy, DieOther)
 
 // Configuration
-//  Patrol
+//  Patrol:
 static constexpr f32 cPatrolRange           = 4 * 16.0f; // tiles
-static constexpr f32 cNoticeRange           = 4 * 16.0f; // tiles
+static constexpr f32 cNoticeRange           = 5 * 16.0f; // tiles
 static constexpr f32 cForgetRange           = 8 * 16.0f; // tiles
 static constexpr f32 cPatrolCycleFrames     = 560.0f;    // 9.33 seconds
-//  Visual
+//  Visual:
 static constexpr f32 cScaleFactor           = 0.17f;     // 3DW models are large
-static constexpr f32 cInvScaleFactor        = 1.0f / cScaleFactor;
 static constexpr f32 cAnimBlendTime         = 10.0f;
 static constexpr f32 cAggroPuffCycleFrames  = 30.0f;     // 0.50 seconds
 static constexpr f32 cTurnRate              = 3.0f;      // degrees/frame
-//  Chase
+//  Chase:
 static constexpr f32 cChaseBaseSpeed        = 0.5f;
 static constexpr f32 cChaseMaxSpeed         = 2.0f;
 static constexpr f32 cChaseAccelFrames      = 156.0f;    // 2.6 seconds
 static constexpr f32 cChaseInertia          = 0.04f;
-// Bob/Weave
+// Bob/Weave:
 static constexpr f32 cBobCycleFrames        = 131.0f;              // 2.18 seconds
 static constexpr f32 cWeaveCycleFrames      = cBobCycleFrames / 3; // 0.72 seconds
 static constexpr f32 cBobAmplitude          = 2.4f;
 static constexpr f32 cWeaveAmplitude        = 1.6f;
-//  Internal (don't touch these)
+//  Internal: (don't touch these)
+static constexpr f32 cInvScaleFactor        = 1.0f / cScaleFactor;
 static constexpr f32 cPatrolSpeed           = sead::Mathf::pi2() / cPatrolCycleFrames;
 static constexpr f32 cChaseAccel            = (cChaseMaxSpeed - cChaseBaseSpeed) / cChaseAccelFrames;
 static constexpr f32 cBobPhaseStep          = sead::Mathf::pi2() / cBobCycleFrames;
