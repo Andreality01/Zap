@@ -71,6 +71,7 @@ ActorCollisionCheck::CollisionData zap::Stingby::cCollisionData = {
 zap::Stingby::Stingby(const ActorCreateParam& param)
     : Enemy(param)
     , mModel(nullptr)
+    , mJointBoneIdx(-1)
     , mYoshiEatData(mActorUniqueID)
     , mChibiYoshiEatData(mActorUniqueID)
     , mSpawnpoint(mPos)
@@ -90,6 +91,7 @@ ActorBase::Result zap::Stingby::create() {
     
     // Load our model
     mModel = JointBlendModel::create("hacchin000", "hacchin000", 4);
+    mJointBoneIdx = mModel->getModel()->searchBoneIndex("JointRoot");
     mScale = sead::Vector3f(cScaleFactor, cScaleFactor, cScaleFactor);
     
     // Hitbox
@@ -164,10 +166,8 @@ bool zap::Stingby::execute() {
     updateModel();
     
     // Accurately track the model with the hitbox via bone
-    Model* model = mModel->getModel();
-    
     sead::Matrix34f mtx;
-    model->getBoneWorldMatrix(model->searchBoneIndex("JointRoot"), &mtx);
+    mModel->getModel()->getBoneWorldMatrix(mJointBoneIdx, &mtx);
     
     sead::Vector3f hitboxPos = mtx.getTranslation() - mPos;
     mCollisionCheck.setCenterOffsetX(hitboxPos.x);
@@ -315,7 +315,7 @@ void zap::Stingby::executeState_Idle() {
     // Check for terrain collision and turn
     bgCheck_();
     if (mBgCheckObj.checkWall(mDirection))
-        mPatrolPhase += sead::Mathf::pi2();
+        mPatrolPhase = sead::Mathf::pi() - mPatrolPhase;
     
     mPos.x = mSpawnpoint.x + sead::Mathf::sin(mPatrolPhase) * cPatrolRange;
 
@@ -364,6 +364,12 @@ void zap::Stingby::executeState_Chase() {
     
     sead::Vector2f player;
     if (searchNearPlayer(player) == -1 || sead::Mathf::abs(player.x) > cForgetRange || hitWall) {
+        if (hitWall) {
+            mDirection = InvDirX(mDirection);
+            mChaseSpeed = 0.0f;
+            mChaseVelX = 0.0f;
+        }
+        
         // Are we inside the patrol bound?
         const f32 leftBound = mSpawnpoint.x - cPatrolRange;
         const f32 rightBound = mSpawnpoint.x + cPatrolRange;
@@ -373,12 +379,6 @@ void zap::Stingby::executeState_Chase() {
         } else {
             // No, fly back there
             changeState(StateID_Return);
-        }
-        
-        if (hitWall) {
-            mDirection = InvDirX(mDirection);
-            mChaseSpeed = 0.0f;
-            mChaseVelX = 0.0f;
         }
         
         return;

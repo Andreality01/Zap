@@ -39,6 +39,7 @@ public:
 
 private:
     JointBlendModel* mModel;
+    s32 mJointBoneIdx;
     EnemyEatData mYoshiEatData;
     EnemyChibiYoshiEatData mChibiYoshiEatData;
     const sead::Vector3f mSpawnpoint;
