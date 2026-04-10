@@ -28,17 +28,10 @@ static constexpr f32 cChaseBaseSpeed        = 0.5f;
 static constexpr f32 cChaseMaxSpeed         = 2.0f;
 static constexpr f32 cChaseAccelFrames      = 156.0f;    // 2.6 seconds
 static constexpr f32 cChaseInertia          = 0.04f;
-// Bob/Weave:
-static constexpr f32 cBobCycleFrames        = 131.0f;              // 2.18 seconds
-static constexpr f32 cWeaveCycleFrames      = cBobCycleFrames / 3; // 0.72 seconds
-static constexpr f32 cBobAmplitude          = 2.4f;
-static constexpr f32 cWeaveAmplitude        = 1.6f;
 //  Internal: (don't touch these)
 static constexpr f32 cInvScaleFactor        = 1.0f / cScaleFactor;
 static constexpr f32 cPatrolSpeed           = sead::Mathf::pi2() / cPatrolCycleFrames;
 static constexpr f32 cChaseAccel            = (cChaseMaxSpeed - cChaseBaseSpeed) / cChaseAccelFrames;
-static constexpr f32 cBobPhaseStep          = sead::Mathf::pi2() / cBobCycleFrames;
-static constexpr f32 cWeavePhaseStep        = sead::Mathf::pi2() / cWeaveCycleFrames;
 
 // Register it
 Profile* zap::Stingby::cProfile = zap::getRegistrar()->newProfile<zap::Stingby>("stingby")
@@ -77,9 +70,6 @@ zap::Stingby::Stingby(const ActorCreateParam& param)
     , mSpawnpoint(mPos)
     , mChaseSpeed(cChaseBaseSpeed)
     , mChaseVelX(0.0f)
-    , mWeavePhase(0.0f)
-    , mWeaveOffset(0.0f)
-    , mBobPhase(0.0f)
     , mPatrolPhase(0.0f)
     , mPatrolSpeed(cPatrolSpeed)
     , mIdlePauseTimer(0)
@@ -112,10 +102,8 @@ ActorBase::Result zap::Stingby::create() {
     mChibiYoshiEatDataPtr = &mChibiYoshiEatData;
     mChibiYoshiEatData.setEatType(ChibiYoshiEatData::cEatType_Drink);
 
-    // Seed the phases randomly
-    mBobPhase = sead::GlobalRandom::instance()->getF32() * sead::Mathf::pi2();
+    // Seed the phase randomly
     mPatrolPhase = sead::GlobalRandom::instance()->getF32() * sead::Mathf::pi2();
-    mWeavePhase = sead::GlobalRandom::instance()->getF32() * sead::Mathf::pi2();
 
     // Let's go!
     changeState(Stingby::StateID_Idle);
@@ -130,22 +118,6 @@ bool zap::Stingby::execute() {
     if (isState(StateID_Idle) || isState(StateID_Notice) || isState(StateID_Chase) || isState(StateID_Return)) {
         // Turn towards the target direction
         mAngle.y().chaseRest(cBaseAngleY[mDirection], sead::Mathf::deg2idx(cTurnRate));
-
-        // Chaotic movement
-        mBobPhase += cBobPhaseStep;
-        if (mBobPhase > sead::Mathf::pi2())
-            mBobPhase -= sead::Mathf::pi2();
-        
-        mWeavePhase += cWeavePhaseStep;
-        if (mWeavePhase > sead::Mathf::pi2())
-            mWeavePhase -= sead::Mathf::pi2();
-
-        // Smoothly dampen weave
-        const f32 weaveTarget = isState(StateID_Chase) ? sead::Mathf::sin(mWeavePhase) * cWeaveAmplitude : 0.0f;
-        mWeaveOffset += (weaveTarget - mWeaveOffset) * 0.15f;
-
-        // Apply bob and weave together
-        mPos.y = mSpawnpoint.y + sead::Mathf::sin(mBobPhase) * cBobAmplitude + mWeaveOffset;
 
         // Aggro puff
         if (mAggroPuffTimer > 0) {

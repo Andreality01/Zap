@@ -47,11 +47,6 @@ private:
     // Chase state
     f32 mChaseSpeed;
     f32 mChaseVelX;
-    f32 mWeavePhase;
-    f32 mWeaveOffset;
-
-    // Bobbing state
-    f32 mBobPhase;
 
     // Idle (patrol) state
     f32 mPatrolPhase;
