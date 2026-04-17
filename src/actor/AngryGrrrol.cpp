@@ -1,12 +1,17 @@
 #include <zap/actor/AngryGrrrol.h>
+#include <audio/GameAudio.h>
 #include <zap/Zap.h>
 
 /*
     TODO:
     - DRCTouch
-    - Sounds (SE_OBJ_TEKKYU_CRASH, SE_OBJ_TEKKYU_ROLL)
-    - Hit wall effect
+    - Sounds (SE_OBJ_TEKKYU_CRASH)
+    - Hit wall effect (RP_Enm_Collision_5?)
+    - Land effect? (RP_Cmn_LandingSmoke_35)
 */
+
+constexpr f32 cChaseAcceleration = 0.00025f;
+constexpr f32 cBaseSpeed = 0.5f;
 
 SEAD_RTTI_OVERRIDE_IMPL(zap::AngryGrrrol, Enemy);
 
@@ -44,8 +49,10 @@ zap::AngryGrrrol::AngryGrrrol(const ActorCreateParam& param)
 { }
 
 ActorBase::Result zap::AngryGrrrol::create() {
+    // Model
     mModel = AnimModel::create("guruguru", "guruguru", 0, 0, 1);
     // TODO: Play tex srt anim
+    
     // Hitbox
     mCollisionCheck.set(this, AngryGrrrol::cCollisionData);
     reviveCollisionCheck();
@@ -55,7 +62,7 @@ ActorBase::Result zap::AngryGrrrol::create() {
     static const ActorBgCollisionCheck::Sensor headwall = { -8.0f, 8.0f, 16.0f };
     mBgCheckObj.set(this, &foot, &headwall, &headwall);
     
-    // Flags copies from Grrrol, I don't know what all these do
+    // Flags copied from Grrrol, I don't know what all these do
     using F = ActorBgCollisionCheck::SensorFlag::Bit;
     mBgCheckObj.getSensorFlag(cDirType_Down).setBit(
         F::cBit_43
@@ -78,23 +85,21 @@ ActorBase::Result zap::AngryGrrrol::create() {
 }
 
 bool zap::AngryGrrrol::execute() {
+    // Chase player
+    
     sead::Vector2f d2p;
     if (searchNearPlayer(d2p) == -1)
         return true; // No player found
+    
+    mSpeed.x += d2p.x * cChaseAcceleration; // TODO: Make this configurable
+    
+    const f32 maximum = cBaseSpeed * 3; // TODO: Make this configurable
+    mSpeed.x = sead::Mathf::clamp2(-maximum, mSpeed.x, maximum);
 
     calcSpeedY_();
     posMove_();
     
-    mSpeed.x += d2p.x * 0.00025f;
-    
-    const f32 maximum = 0.25f * 6; //TODO: ((this->eventID1 >> 0x4 & 0xF) + 1);
-    
-    if (d2p.x > 0.0f && mSpeed.x > maximum) {
-        mSpeed.x = maximum;
-    } else if (d2p.x < 0.0f && mSpeed.x < -maximum) {
-        mSpeed.x = -maximum;
-    }
-    
+    // Terrain collision
     bgCheck_();
     if (bgCheckFoot_()) {
         mSpeed.y = 0;
@@ -104,11 +109,16 @@ bool zap::AngryGrrrol::execute() {
         mSpeed.x = 0;
     }
     
+    // Sparks effect
     if (sead::Mathf::abs(mSpeed.x) > 0.5f) {
         sead::Vector3f effectPos(mPos.x, mPos.y - 16.0f, mPos.z + 50.0f);
         mEffectSparks.createEffect(RP_Gorogoro_move_0, &effectPos, nullptr, nullptr);
     }
     
+    // Roll sound
+    GameAudio::getAudioObjMap()->holdSound("SE_OBJ_TEKKYU_ROLL", mActorUniqueID.getValue(), mPos, 17);
+    
+    // Rotate model
     mAngle.z() -= sead::Mathf::deg2idx(2.0f * mSpeed.x);
     updateModel();
     
