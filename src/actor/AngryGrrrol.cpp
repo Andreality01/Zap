@@ -85,6 +85,9 @@ ActorBase::Result zap::AngryGrrrol::create() {
 }
 
 bool zap::AngryGrrrol::execute() {
+    // Delete when offscreen
+    screenOutCheck(0);
+    
     // Chase player
     
     sead::Vector2f d2p;

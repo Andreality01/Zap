@@ -113,6 +113,9 @@ ActorBase::Result zap::Stingby::create() {
 }
 
 bool zap::Stingby::execute() {
+    // Delete when offscreen
+    screenOutCheck(0);
+    
     executeState();
     
     if (isState(StateID_Idle) || isState(StateID_Notice) || isState(StateID_Chase) || isState(StateID_Return)) {

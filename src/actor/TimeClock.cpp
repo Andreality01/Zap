@@ -60,6 +60,9 @@ ActorBase::Result zap::TimeClock::create() {
 }
 
 bool zap::TimeClock::execute() {
+    // Delete when offscreen
+    screenOutCheck(0);
+    
     mAngle.y() -= sead::Mathf::deg2idx(5.0f); // spin 5 degrees per frame
     updateModel();
 
