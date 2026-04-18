@@ -40,7 +40,7 @@ Profile* zap::Stingby::cProfile = zap::getRegistrar()->newProfile<zap::Stingby>(
 
 // Hitbox data
 using CC = ActorCollisionCheck;
-ActorCollisionCheck::CollisionData zap::Stingby::cCollisionData = {
+const ActorCollisionCheck::CollisionData zap::Stingby::cCollisionData = {
     .center_offset = { 0.0f, 0.0f },
     .half_size = { 8.5f, 8.5f },
     .shape_type = CC::cShapeType_Box,

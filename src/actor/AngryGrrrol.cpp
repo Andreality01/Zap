@@ -16,7 +16,7 @@ constexpr f32 cBaseSpeed = 0.5f;
 SEAD_RTTI_OVERRIDE_IMPL(zap::AngryGrrrol, Enemy);
 
 using CC = ActorCollisionCheck;
-ActorCollisionCheck::CollisionData zap::AngryGrrrol::cCollisionData = {
+const ActorCollisionCheck::CollisionData zap::AngryGrrrol::cCollisionData = {
     .center_offset = { 0.0f, 0.0f },
     .half_size = { 12.0f, 12.0f },
     .shape_type = CC::cShapeType_Circle,

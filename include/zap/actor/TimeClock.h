@@ -23,7 +23,7 @@ public:
     void updateModel();
     void collect();
     
-    static ActorCollisionCheck::CollisionData cCollisionData;
+    static const ActorCollisionCheck::CollisionData cCollisionData;
     
 private:
     AnimModel* mModel;

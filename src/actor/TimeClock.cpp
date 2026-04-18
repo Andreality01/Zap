@@ -13,7 +13,7 @@ Profile* zap::TimeClock::cProfile = zap::getRegistrar()->newProfile<zap::TimeClo
 
 // Hitbox data
 using CC = ActorCollisionCheck;
-ActorCollisionCheck::CollisionData zap::TimeClock::cCollisionData = {
+const ActorCollisionCheck::CollisionData zap::TimeClock::cCollisionData = {
     .center_offset = { 0.0f, 0.0f },
     .half_size = { 12.0f, 12.0f },
     .shape_type = CC::cShapeType_Box,

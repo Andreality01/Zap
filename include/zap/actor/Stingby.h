@@ -28,7 +28,7 @@ public:
     
     void updateModel();
 
-    static ActorCollisionCheck::CollisionData cCollisionData;
+    static const ActorCollisionCheck::CollisionData cCollisionData;
 
     DECLARE_STATE_ID(Stingby, Idle)
     DECLARE_STATE_ID(Stingby, Notice)
