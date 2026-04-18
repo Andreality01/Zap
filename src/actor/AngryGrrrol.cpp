@@ -134,9 +134,5 @@ bool zap::AngryGrrrol::draw() {
 }
 
 void zap::AngryGrrrol::updateModel() {
-    sead::Matrix34f mtx;
-    mtx.makeRTIdx(mAngle, mPos);
-    mModel->setMtxRT(mtx);
-    mModel->setScale(mScale);
-    mModel->calcMdl();
+    mModel->update(mPos, mAngle, mScale);
 }

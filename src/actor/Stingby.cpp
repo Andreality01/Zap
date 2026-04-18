@@ -184,16 +184,7 @@ void zap::Stingby::setIceAnm() {
 }
 
 void zap::Stingby::updateModel() {
-    sead::Matrix34f mtx;
-    mtx.makeRTIdx(mAngle, mPos);
-    mModel->setMtxRT(mtx);
-
-    if (!isState(StateID_Ice)) { // Don't animate if we're frozen, obviously
-        mModel->playAnmFrameCtrl();
-    }
-
-    mModel->setScale(mScale);
-    mModel->calcMdl();
+    mModel->update(mPos, mAngle, mScale, !isState(StateID_Ice)); // don't animate if we're frozen
 }
 
 bool zap::Stingby::draw() {

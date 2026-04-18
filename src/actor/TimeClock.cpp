@@ -75,12 +75,7 @@ bool zap::TimeClock::draw() {
 }
 
 void zap::TimeClock::updateModel() {
-    // just copy our transform info
-    sead::Matrix34f mtx;
-    mtx.makeRTIdx(mAngle, mPos);
-    mModel->setMtxRT(mtx);
-    mModel->setScale(mScale);
-    mModel->calcMdl();
+    mModel->update(mPos, mAngle, mScale);
 }
 
 void zap::TimeClock::collect() {
