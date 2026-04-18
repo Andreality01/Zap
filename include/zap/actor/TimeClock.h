@@ -9,7 +9,7 @@ class TimeClock : public Actor {
     SEAD_RTTI_OVERRIDE(TimeClock, Actor)
 
 public:
-    static Profile* cProfile;
+    static const Profile* cProfile;
 
     TimeClock(const ActorCreateParam& param);
     ~TimeClock() override = default;
@@ -29,4 +29,4 @@ private:
     AnimModel* mModel;
 };
 
-}
+} // namespace zap

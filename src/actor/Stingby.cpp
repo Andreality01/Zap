@@ -34,7 +34,7 @@ static constexpr f32 cPatrolSpeed           = sead::Mathf::pi2() / cPatrolCycleF
 static constexpr f32 cChaseAccel            = (cChaseMaxSpeed - cChaseBaseSpeed) / cChaseAccelFrames;
 
 // Register it
-Profile* zap::Stingby::cProfile = zap::getRegistrar()->newProfile<zap::Stingby>("stingby")
+const Profile* zap::Stingby::cProfile = zap::getRegistrar()->newProfile<zap::Stingby>("stingby")
     .resources<"hacchin000">(ProfileInfo::cResType_Course)
     .build();
 

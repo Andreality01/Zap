@@ -10,7 +10,7 @@ class AngryGrrrol : public Enemy {
     SEAD_RTTI_OVERRIDE(AngryGrrrol, Enemy);
 
 public:
-    static Profile* cProfile;
+    static const Profile* cProfile;
 
     AngryGrrrol(const ActorCreateParam& param);
     ~AngryGrrrol() override = default;
@@ -28,4 +28,4 @@ private:
     EffectObj mEffectSparks;
 };
 
-}
+} // namespace zap

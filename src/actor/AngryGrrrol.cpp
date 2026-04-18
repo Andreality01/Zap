@@ -38,7 +38,7 @@ const ActorCollisionCheck::CollisionData zap::AngryGrrrol::cCollisionData = {
     .callback = &Enemy::normal_collcheck
 };
 
-Profile* zap::AngryGrrrol::cProfile = zap::getRegistrar()->newProfile<zap::AngryGrrrol>("angrygrrrol")
+const Profile* zap::AngryGrrrol::cProfile = zap::getRegistrar()->newProfile<zap::AngryGrrrol>("angrygrrrol")
     .resources<"guruguru">(ProfileInfo::cResType_Course)
     .build();
 

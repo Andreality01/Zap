@@ -7,7 +7,7 @@
 SEAD_RTTI_OVERRIDE_IMPL(zap::TimeClock, Actor);
 
 // Register it
-Profile* zap::TimeClock::cProfile = zap::getRegistrar()->newProfile<zap::TimeClock>("timeclock")
+const Profile* zap::TimeClock::cProfile = zap::getRegistrar()->newProfile<zap::TimeClock>("timeclock")
     .resources<"timeclock">(ProfileInfo::cResType_Course)
     .build();
 
