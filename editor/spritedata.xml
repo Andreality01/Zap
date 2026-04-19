@@ -1,0 +1,17 @@
+<?xml version="1.0"?>
+<sprites>
+	<sprite string_id="zap:stingby" name="Stingby">
+	</sprite>
+	
+	<sprite string_id="zap:timeclock" name="Time Clock">
+		<value nybble="10-12" title="Time Amount"/>
+	</sprite>
+	
+	<sprite string_id="zap:angrygrrrol" name="Angry Grrrol">
+		
+	</sprite>
+	
+	<sprite string_id="zap:flybones" name="Fly Bones">
+	    
+	</sprite>
+</sprites>

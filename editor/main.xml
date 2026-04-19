@@ -1,0 +1,4 @@
+<?xml version="1.0"?>
+<game name="Zap" version="1.0" description="Zenith Actor Pack">
+    <file name="spritedata" path="spritedata.xml" />
+</game>
