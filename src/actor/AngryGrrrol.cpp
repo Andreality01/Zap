@@ -1,6 +1,7 @@
 #include <zap/actor/AngryGrrrol.h>
 #include <audio/GameAudio.h>
 #include <zap/Zap.h>
+#include <red/util/SpriteUtil.h>
 
 /*
     TODO:
@@ -68,17 +69,26 @@ ActorBase::Result zap::AngryGrrrol::create() {
         F::cBit_43
     );
     mBgCheckObj.getSensorFlag(cDirType_Right).setBit(
-        F::cBit_BreakBlocks,
         F::cBit_6, F::cBit_9, F::cBit_10, F::cBit_15, F::cBit_26, F::cBit_27, F::cBit_36, F::cBit_43, F::cBit_54, F::cBit_56
     );
     mBgCheckObj.getSensorFlag(cDirType_Left).setBit(
-        F::cBit_BreakBlocks,
         F::cBit_6, F::cBit_9, F::cBit_10, F::cBit_15, F::cBit_26, F::cBit_27, F::cBit_36, F::cBit_43, F::cBit_54, F::cBit_56
     );
     mBgCheckObj.getSensorFlag(cDirType_Up).setBit(
-        F::cBit_BreakBlocks,
         F::cBit_6, F::cBit_15, F::cBit_43, F::cBit_54, F::cBit_56
     );
+    
+    // Setting: Break Blocks (Sides)
+    if (red::SpriteUtil::getNybble7(this) != 0) {
+        mBgCheckObj.getSensorFlag(cDirType_Up).setBit(F::cBit_BreakBlocks);
+        mBgCheckObj.getSensorFlag(cDirType_Left).setBit(F::cBit_BreakBlocks);
+        mBgCheckObj.getSensorFlag(cDirType_Right).setBit(F::cBit_BreakBlocks);
+    }
+    
+    // Setting: Break Blocks (Down)
+    if (red::SpriteUtil::getNybble8(this) != 0) {
+        mBgCheckObj.getSensorFlag(cDirType_Down).setBit(F::cBit_BreakBlocks);
+    }
     
     updateModel();
     return cResult_Success;
@@ -94,10 +104,13 @@ bool zap::AngryGrrrol::execute() {
     if (searchNearPlayer(d2p) == -1)
         return true; // No player found
     
-    mSpeed.x += d2p.x * cChaseAcceleration; // TODO: Make this configurable
+    // Setting: Acceleration
+    const f32 accel = cChaseAcceleration * ((red::SpriteUtil::getNybble6(this) + 4) / 4.0f);
+    mSpeed.x += d2p.x * accel;
     
-    const f32 maximum = cBaseSpeed * 3; // TODO: Make this configurable
-    mSpeed.x = sead::Mathf::clamp2(-maximum, mSpeed.x, maximum);
+    // Setting: Maximum Speed
+    const f32 maxSpeed = cBaseSpeed * (red::SpriteUtil::getNybble5(this) + 1);
+    mSpeed.x = sead::Mathf::clamp2(-maxSpeed, mSpeed.x, maxSpeed);
 
     calcSpeedY_();
     posMove_();
@@ -119,6 +132,7 @@ bool zap::AngryGrrrol::execute() {
     }
     
     // Roll sound
+    // TODO: Only play when moving
     GameAudio::getAudioObjMap()->holdSound("SE_OBJ_TEKKYU_ROLL", mActorUniqueID.getValue(), mPos, 17);
     
     // Rotate model
