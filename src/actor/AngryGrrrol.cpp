@@ -52,7 +52,7 @@ zap::AngryGrrrol::AngryGrrrol(const ActorCreateParam& param)
 ActorBase::Result zap::AngryGrrrol::create() {
     // Model
     mModel = AnimModel::create("guruguru", "guruguru", 0, 0, 1);
-    // TODO: Play tex srt anim
+    mModel->playTexSrtAnim("guruguru");
     
     // Hitbox
     mCollisionCheck.set(this, AngryGrrrol::cCollisionData);
