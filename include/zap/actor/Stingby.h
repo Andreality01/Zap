@@ -3,6 +3,7 @@
 #include <enemy/Enemy.h>
 #include <enemy/EnemyEatData.h>
 #include <enemy/EnemyChibiYoshiEatData.h>
+#include <enemy/EnemyChibiYoshiAwaData.h>
 #include <graphics/JointBlendModel.h>
 
 namespace zap {
@@ -42,6 +43,7 @@ private:
     s32 mJointBoneIdx;
     EnemyEatData mYoshiEatData;
     EnemyChibiYoshiEatData mChibiYoshiEatData;
+    EnemyChibiYoshiAwaData mChibiYoshiAwaData;
     const sead::Vector3f mSpawnpoint;
 
     // Chase state
