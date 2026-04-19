@@ -178,6 +178,10 @@ void zap::FlyBones::vsYoshiHitCheck_Normal(ActorCollisionCheck* cc_self, ActorCo
     }
 }
 
+bool zap::FlyBones::hitCallback_Fire(ActorCollisionCheck* cc_self, ActorCollisionCheck* cc_other) {
+    return false; // immune
+}
+
 /** STATE: Idle */
 
 void zap::FlyBones::initializeState_Idle() {
