@@ -8,10 +8,6 @@
 	</sprite>
 	
 	<sprite string_id="zap:angrygrrrol" name="Angry Grrrol">
-		
-	</sprite>
-	
-	<sprite string_id="zap:angrygrrrol" name="Angry Grrrol">
 		<value nybble="5" title="Maximum Speed"/>
 		<value nybble="6" title="Acceleration"/>
 		<checkbox nybble="7" title="Break Blocks (Sides)" comment="Destroys blocks on collision from the side."/>
