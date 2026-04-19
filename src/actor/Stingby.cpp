@@ -67,7 +67,6 @@ zap::Stingby::Stingby(const ActorCreateParam& param)
     , mJointBoneIdx(-1)
     , mYoshiEatData(mActorUniqueID)
     , mChibiYoshiEatData(mActorUniqueID)
-    , mChibiYoshiAwaData(mActorUniqueID)
     , mSpawnpoint(mPos)
     , mChaseSpeed(cChaseBaseSpeed)
     , mChaseVelX(0.0f)
@@ -102,10 +101,6 @@ ActorBase::Result zap::Stingby::create() {
     // Baby Yoshi eat ability
     mChibiYoshiEatDataPtr = &mChibiYoshiEatData;
     mChibiYoshiEatData.setEatType(ChibiYoshiEatData::cEatType_Drink);
-    
-    // Baby Yoshi bubble ability
-    mChibiYoshiAwaDataPtr = &mChibiYoshiAwaData;
-    mChibiYoshiAwaData.setAwaType(ChibiYoshiAwaData::cAwaType_Catch);
 
     // Seed the phase randomly
     mPatrolPhase = sead::GlobalRandom::instance()->getF32() * sead::Mathf::pi2();
