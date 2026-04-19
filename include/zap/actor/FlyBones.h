@@ -1,6 +1,8 @@
 #pragma once
 
 #include <enemy/Enemy.h>
+#include <enemy/EnemyEatData.h>
+#include <enemy/EnemyChibiYoshiAwaData.h>
 #include <actor/Profile.h>
 #include <graphics/AnimModel.h>
 
@@ -35,6 +37,8 @@ public:
 private:
     AnimModel* mBodyModel;
     AnimModel* mWingsModel;
+    EnemyEatData mYoshiEatData;
+    EnemyChibiYoshiAwaData mChibiYoshiAwaData;
 };
 
 } // namespace zap

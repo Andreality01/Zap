@@ -52,23 +52,34 @@ zap::FlyBones::FlyBones(const ActorCreateParam& param)
     : Enemy(param)
     , mBodyModel(nullptr)
     , mWingsModel(nullptr)
+    , mYoshiEatData(mActorUniqueID)
+    , mChibiYoshiAwaData(mActorUniqueID)
 { }
 
 ActorBase::Result zap::FlyBones::create() {
-    mAngle.y() = cBaseAngleY[cDirType_Left];
+    mAngle.y() = cBaseAngleY[cDirType_Left]; // TODO: Configurable or check player
     
+    // Load models
     mBodyModel = AnimModel::create("nokonokoB", "nokonokoB", 1);
     mBodyModel->playSklAnim("flyA");
-    
     mWingsModel = AnimModel::create("wing", "wing", 1);
     mWingsModel->playSklAnim("wing_kuri");
     
-    updateModel();
-    
+    // Hitbox
     mCollisionCheck.set(this, cCollisionData);
     reviveCollisionCheck();
     
+    // Yoshi eat inability
+    mEatDataPtr = &mYoshiEatData;
+    mYoshiEatData.setEatType(EatData::cEatType_None);
+    
+    // Baby Yoshi bubble ability
+    mChibiYoshiAwaDataPtr = &mChibiYoshiAwaData;
+    mChibiYoshiAwaData.setAwaType(ChibiYoshiAwaData::cAwaType_Catch);
+    
     changeState(StateID_Idle);
+    
+    updateModel();
     
     return cResult_Success;
 }
