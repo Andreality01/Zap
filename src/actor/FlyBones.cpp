@@ -2,7 +2,9 @@
 #include <zap/Zap.h>
 #include <actor/ActorMgr.h>
 
-SEAD_RTTI_OVERRIDE_IMPL(zap::FlyBones, Enemy);
+SEAD_RTTI_OVERRIDE_IMPL(zap::FlyBones, Enemy)
+
+CREATE_STATE_ID(zap::FlyBones, Idle)
 
 // Spawning data
 const ActorCreateInfo zap::FlyBones::cCreateInfo = {
@@ -66,6 +68,8 @@ ActorBase::Result zap::FlyBones::create() {
     mCollisionCheck.set(this, cCollisionData);
     reviveCollisionCheck();
     
+    changeState(StateID_Idle);
+    
     return cResult_Success;
 }
 
@@ -95,8 +99,8 @@ bool zap::FlyBones::draw() {
 }
 
 void zap::FlyBones::updateModel() {
-    mBodyModel->update(mPos, mAngle, mScale);
-    mWingsModel->update(mPos + sead::Vector3f(0.0f, 8.0f, 0.0f), mAngle, mScale);
+    mBodyModel->update(mPos, mAngle, mScale, !isState(StateID_Ice));
+    mWingsModel->update(mPos + sead::Vector3f(0.0f, 8.0f, 0.0f), mAngle, mScale, !isState(StateID_Ice));
 }
 
 void zap::FlyBones::loseWings() {
@@ -109,6 +113,23 @@ void zap::FlyBones::loseWings() {
     child.profile = Profile::get(0x288); // TODO: Enum
     child.position = mPos + sead::Vector3f(0.0f, -8.0f, 0.0f);
     ActorMgr::instance()->createImmediately(child);
+}
+
+bool zap::FlyBones::createIceActor() {
+    const sead::Vector3f scale = {
+        mScale.x * 1.1f,
+        mScale.y * 0.95f,
+        mScale.z * 1.3f
+    };
+    
+    IceInfo info = { 
+        IceInfo::makeParam(cIceType_Tate),
+        mPos + sead::Vector3f(0.0f, -8.0f, 0.0f),
+        scale,
+        nullptr
+    };
+    
+    return mIceMgr.createIce(info);
 }
 
 void zap::FlyBones::vsPlayerHitCheck_Normal(ActorCollisionCheck* cc_self, ActorCollisionCheck* cc_other) {
@@ -145,3 +166,15 @@ void zap::FlyBones::vsYoshiHitCheck_Normal(ActorCollisionCheck* cc_self, ActorCo
         }
     }
 }
+
+/** STATE: Idle */
+
+void zap::FlyBones::initializeState_Idle() {
+    
+}
+
+void zap::FlyBones::executeState_Idle() {
+    
+}
+
+void zap::FlyBones::finalizeState_Idle() { }
