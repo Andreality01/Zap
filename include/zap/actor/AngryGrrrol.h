@@ -26,6 +26,7 @@ public:
 private:
     AnimModel* mModel;
     EffectObj mEffectSparks;
+    bool mTouchingWall;
 };
 
 } // namespace zap

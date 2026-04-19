@@ -2,12 +2,11 @@
 #include <audio/GameAudio.h>
 #include <zap/Zap.h>
 #include <red/util/SpriteUtil.h>
+#include <effect/EffectCreateUtil.h>
 
 /*
     TODO:
     - DRCTouch
-    - Sounds (SE_OBJ_TEKKYU_CRASH)
-    - Hit wall effect (RP_Enm_Collision_5?)
     - Land effect? (RP_Cmn_LandingSmoke_35)
 */
 
@@ -47,6 +46,7 @@ zap::AngryGrrrol::AngryGrrrol(const ActorCreateParam& param)
     : Enemy(param)
     , mModel(nullptr)
     , mEffectSparks()
+    , mTouchingWall(false)
 { }
 
 ActorBase::Result zap::AngryGrrrol::create() {
@@ -123,6 +123,19 @@ bool zap::AngryGrrrol::execute() {
     
     if (bgCheckWall_()) {
         mSpeed.x = 0;
+        
+        if (!mTouchingWall) {
+            // We just hit a wall that we weren't touching already
+            // spawn a particle effect
+            sead::Vector3f effectPos = mPos + sead::Vector3f(mBgCheckObj.checkWall(cDirType_Left) ? -11.0f : 11.0f, 0.0f, 0.0f);
+            EffectCreateUtil::createEffect(RP_Enm_Collision_5, &effectPos);
+            // play a sound effect
+            GameAudio::getAudioObjMap()->startSound("SE_OBJ_TEKKYU_CRASH", mPos);
+        }
+        
+        mTouchingWall = true;
+    } else {
+        mTouchingWall = false;
     }
     
     // Sparks effect
