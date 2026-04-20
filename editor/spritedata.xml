@@ -19,6 +19,12 @@
 	</sprite>
 
 	<sprite string_id="zap:biddybud" name="Biddybud">
-	    
+		<list nybble="5" title="Color">
+            <entry value="0">Red</entry>
+            <entry value="1">Yellow</entry>
+            <entry value="2">Green</entry>
+            <entry value="3">Blue</entry>
+            <entry value="4">Pink</entry>
+        </list>
 	</sprite>
 </sprites>
