@@ -100,32 +100,32 @@ bool zap::AngryGrrrol::execute() {
     
     // Chase player
     
-    sead::Vector2f d2p;
-    if (searchNearPlayer(d2p) == -1)
+    sead::Vector2f distanceToPlayer;
+    if (searchNearPlayer(distanceToPlayer) == -1)
         return true; // No player found
     
     // Setting: Acceleration
     const f32 accel = cChaseAcceleration * ((red::SpriteUtil::getNybble6(this) + 4) / 4.0f);
-    mSpeed.x += d2p.x * accel;
+    mSpeed.x += distanceToPlayer.x * accel;
     
     // Setting: Maximum Speed
     const f32 maxSpeed = cBaseSpeed * (red::SpriteUtil::getNybble5(this) + 1);
     mSpeed.x = sead::Mathf::clamp2(-maxSpeed, mSpeed.x, maxSpeed);
 
-    calcSpeedY_();
-    posMove_();
+    calcSpeedY_(); // apply gravity
+    posMove_();    // apply velocity
     
     // Terrain collision
     bgCheck_();
     if (bgCheckFoot_()) {
-        mSpeed.y = 0;
+        mSpeed.y = 0; // stop accelerating downwards if we hit the ground
     }
     
-    if (bgCheckWall_()) {
+    if (bgCheckWall_()) { // this function just tells you if you're currently touching a wall, but who knows for how long! (so track the state in mTouchingWall)
         mSpeed.x = 0;
         
         if (!mTouchingWall) {
-            // We just hit a wall that we weren't touching already
+            // We *just* hit a wall that we weren't touching already
             // spawn a particle effect
             sead::Vector3f effectPos = mPos + sead::Vector3f(mBgCheckObj.checkWall(cDirType_Left) ? -11.0f : 11.0f, 0.0f, 0.0f);
             EffectCreateUtil::createEffect(RP_Enm_Collision_5, &effectPos);
@@ -135,7 +135,7 @@ bool zap::AngryGrrrol::execute() {
         
         mTouchingWall = true;
     } else {
-        mTouchingWall = false;
+        mTouchingWall = false; // reset every frame
     }
     
     // Sparks effect
