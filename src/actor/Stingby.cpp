@@ -118,6 +118,7 @@ bool zap::Stingby::execute() {
     
     executeState();
     
+    // We dont want to do these things while dead or frozen etc
     if (isState(StateID_Idle) || isState(StateID_Notice) || isState(StateID_Chase) || isState(StateID_Return)) {
         // Turn towards the target direction
         mAngle.y().chaseRest(cBaseAngleY[mDirection], sead::Mathf::deg2idx(cTurnRate));
@@ -259,15 +260,15 @@ void zap::Stingby::executeState_Idle() {
         changeState(StateID_Notice);
     }
     
-    // Idle pause (0.5% chance per frame)
+    // Idle pause (0.2% chance per frame)
     // Smoothly lerp patrol speed for inertia
     const f32 lerpFactor = 0.18f;
     if (mIdlePauseTimer > 0) {
         mIdlePauseTimer--;
         mPatrolSpeed += (0.0f - mPatrolSpeed) * lerpFactor;
     } else {
-        if (sead::GlobalRandom::instance()->getU32() % 200 == 0) {
-            mIdlePauseTimer = 90;
+        if (sead::GlobalRandom::instance()->getU32() % 500 == 0) {
+            mIdlePauseTimer = 60;
         }
         mPatrolSpeed += (cPatrolSpeed - mPatrolSpeed) * lerpFactor;
     }
