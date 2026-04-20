@@ -8,7 +8,7 @@ CREATE_STATE_ID(zap::FlyBones, Idle)
 
 // Spawning data
 const ActorCreateInfo zap::FlyBones::cCreateInfo = {
-    .offset_x = 8, .offset_y = -16,
+    .offset_x = 8, .offset_y = -16, // how far away from the actual sprite (the blue square) the actor will spawn, useful for centering the actor
     .spawn_range = {
         .offset_x = 0, .offset_y = 16,
         .half_size_x = 8, .half_size_y = 16
@@ -91,10 +91,10 @@ bool zap::FlyBones::execute() {
     executeState();
     
     // Turn to face the player
-    sead::Vector2f player;
-    if (searchNearPlayer(player) != -1) {
+    sead::Vector2f distanceToPlayer;
+    if (searchNearPlayer(distanceToPlayer) != -1) {
         // Found a player, face him
-        mDirection = player.x > 0 ? cDirType_Right : cDirType_Left;
+        mDirection = distanceToPlayer.x > 0 ? cDirType_Right : cDirType_Left;
     }
     mAngle.y().chaseRest(cBaseAngleY[mDirection], sead::Mathf::deg2idx(3.0f));
     
@@ -127,33 +127,40 @@ void zap::FlyBones::loseWings() {
 }
 
 bool zap::FlyBones::createIceActor() {
-    const sead::Vector3f scale = {
+    const sead::Vector3f iceScale = {
         mScale.x * 1.1f,
         mScale.y * 0.95f,
         mScale.z * 1.3f
     };
     
-    IceInfo info = { 
+    IceInfo info = {
         IceInfo::makeParam(cIceType_Tate),
         mPos + sead::Vector3f(0.0f, -8.0f, 0.0f),
-        scale,
+        iceScale,
         nullptr
     };
     
     return mIceMgr.createIce(info);
 }
 
+// Player stomp
 void zap::FlyBones::vsPlayerHitCheck_Normal(ActorCollisionCheck* cc_self, ActorCollisionCheck* cc_other) {
+    // The callback gets a pointer to the specific hitbox which just touched us
+    // Get the actor which owns that hitbox
     Actor* other = cc_other->getOwner();
     
+    /// IM ANTIFUMI -joe 2026
+    // this just checks what type of hit just occurred
     switch (fumiCheck(cc_self, cc_other, cFumiSeType_Normal)) {
         case cFumiType_Fumi:
         case cFumiType_SpinFumi: {
+            // stomp or spinjump
             loseWings();
             return;
         }
         
         case cFumiType_MameFumi: {
+            // mini stomp, do nothing
             return;
         }
         
@@ -163,6 +170,7 @@ void zap::FlyBones::vsPlayerHitCheck_Normal(ActorCollisionCheck* cc_self, ActorC
     }
 }
 
+// Same as above, but for Yoshi
 void zap::FlyBones::vsYoshiHitCheck_Normal(ActorCollisionCheck* cc_self, ActorCollisionCheck* cc_other) {
     Actor* other = cc_other->getOwner();
     
