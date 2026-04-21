@@ -3,7 +3,7 @@
 #include <enemy/Enemy.h>
 #include <actor/Profile.h>
 #include <graphics/JointBlendModel.h>
-#include <parent/ParentMovementMgr.h>
+#include <map_obj/ParentMovementMgr.h>
 #include <enemy/EnemyEatData.h>
 #include <enemy/EnemyChibiYoshiEatData.h>
 

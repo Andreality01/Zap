@@ -76,11 +76,11 @@ ActorBase::Result zap::Biddybud::create() {
     
     // Movement setup
     const u8 nybble20 = red::SpriteUtil::getNybble20(this);
-    if (nybble20 > cMovement_MushroomList) {
+    if (nybble20 > cPos_KinokoLift) {
         tk::fatal("Biddybud movement type was out of bounds");
     }
     const ParentMovementType movementType = static_cast<ParentMovementType>(nybble20);
-    u32 movementMask = mMovementHandler.getMaskForMovementType(movementType);
+    u32 movementMask = mMovementHandler.getTypeMask(movementType);
     mMovementHandler.link(mPos, movementMask, mParamEx.course.movement_id); // nybble 21-22
     
     // Yoshi eat ability
