@@ -11,7 +11,7 @@ const ActorCreateInfo zap::FlyBones::cCreateInfo = {
     .offset_x = 8, .offset_y = -16, // how far away from the actual sprite (the blue square) the actor will spawn, useful for centering the actor
     .spawn_range = {
         .offset_x = 0, .offset_y = 16,
-        .half_size_x = 8, .half_size_y = 16
+        .half_size_x = 8, .half_size_y = 8
     },
     .cull_range = { 
         .up = 0, .down = 0, .left = 0, .right = 0
