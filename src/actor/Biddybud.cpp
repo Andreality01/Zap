@@ -1,6 +1,7 @@
 #include <zap/actor/Biddybud.h>
 #include <zap/Zap.h>
 #include <red/util/SpriteUtil.h>
+#include <effect/EffectCreateUtil.h>
 
 SEAD_RTTI_OVERRIDE_IMPL(zap::Biddybud, Enemy)
 
@@ -16,7 +17,7 @@ const ActorCreateInfo zap::Biddybud::cCreateInfo = {
     .offset_x = 8, .offset_y = -8,
     .spawn_range = {
         .offset_x = 0, .offset_y = 0,
-        .half_size_x = 8, .half_size_y = 16
+        .half_size_x = 8, .half_size_y = 8
     },
     .cull_range = { 
         .up = 0, .down = 0, .left = 0, .right = 0
@@ -53,6 +54,8 @@ const Profile* zap::Biddybud::cProfile = zap::getRegistrar()->newProfile<zap::Bi
 zap::Biddybud::Biddybud(const ActorCreateParam& param)
     : Enemy(param)
     , mModel(nullptr)
+    , mYoshiEatData(mActorUniqueID)
+    , mChibiYoshiEatData(mActorUniqueID)
     , mMovementHandler()
 { }
 
@@ -80,6 +83,14 @@ ActorBase::Result zap::Biddybud::create() {
     u32 movementMask = mMovementHandler.getMaskForMovementType(movementType);
     mMovementHandler.link(mPos, movementMask, mParamEx.course.movement_id); // nybble 21-22
     
+    // Yoshi eat ability
+    mEatDataPtr = &mYoshiEatData;
+    mYoshiEatData.setEatType(EatData::cEatType_Drink);
+    
+    // Baby Yoshi eat ability
+    mChibiYoshiEatDataPtr = &mChibiYoshiEatData;
+    mChibiYoshiEatData.setEatType(ChibiYoshiEatData::cEatType_Drink);
+
     changeState(StateID_Idle);
 
     updateModel();
@@ -192,6 +203,10 @@ void zap::Biddybud::executeState_DieOther() {
     if (mModel->getCurSklAnim()->getFrameCtrl().isStop()) {
         deleteRequest();
         removeCollisionCheck();
+        
+        // Spawn a puff effect
+        // TODO: Change this effect to the correct one from Yoshi stomp?
+        EffectCreateUtil::createEffect(RP_Cmn_EnemyBurst_00, &mPos);
     }
 }
 

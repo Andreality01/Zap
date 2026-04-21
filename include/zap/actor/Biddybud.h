@@ -1,9 +1,11 @@
 #pragma once
 
 #include <enemy/Enemy.h>
+#include <actor/Profile.h>
 #include <graphics/JointBlendModel.h>
 #include <parent/ParentMovementMgr.h>
-#include <actor/Profile.h>
+#include <enemy/EnemyEatData.h>
+#include <enemy/EnemyChibiYoshiEatData.h>
 
 namespace zap {
 
@@ -35,6 +37,8 @@ public:
     DECLARE_STATE_VIRTUAL_ID_OVERRIDE(Biddybud, DieOther)
 
 private:
+    EnemyEatData mYoshiEatData;
+    EnemyChibiYoshiEatData mChibiYoshiEatData;
     JointBlendModel* mModel;
     ParentMovementMgr mMovementHandler;
 };
