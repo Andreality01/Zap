@@ -149,7 +149,7 @@ bool zap::AngryGrrrol::execute() {
     GameAudio::getAudioObjMap()->holdSound("SE_OBJ_TEKKYU_ROLL", mActorUniqueID.getValue(), mPos, 17);
     
     // Rotate model
-    mAngle.z() -= sead::Mathf::deg2idx(2.0f * mSpeed.x);
+    mAngle.z() -= sead::Mathf::deg2idx(3.1f * mSpeed.x);
     updateModel();
     
     return true;
