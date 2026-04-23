@@ -139,7 +139,7 @@ bool zap::AngryGrrrol::execute() {
     
     // Sparks effect
     if (sead::Mathf::abs(mSpeed.x) > 0.7f) {
-        sead::Vector3f effectPos(mPos.x, mPos.y - 16.0f, mPos.z + 50.0f);
+        const sead::Vector3f effectPos(mPos.x, mPos.y - 16.0f, mPos.z + 50.0f);
         mEffectSparks.createEffect(RP_Gorogoro_move_0, &effectPos);
     }
     
