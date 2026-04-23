@@ -90,7 +90,7 @@ ActorBase::Result zap::AngryGrrrol::create() {
         mBgCheckObj.getSensorFlag(cDirType_Down).setBit(F::cBit_BreakBlocks);
     }
     
-    updateModel();
+    calcMdl_Base();
     return cResult_Success;
 }
 
@@ -150,7 +150,7 @@ bool zap::AngryGrrrol::execute() {
     
     // Rotate model
     mAngle.z() -= sead::Mathf::deg2idx(3.1f * mSpeed.x);
-    updateModel();
+    calcMdl_Base();
     
     return true;
 }
@@ -160,6 +160,6 @@ bool zap::AngryGrrrol::draw() {
     return true;
 }
 
-void zap::AngryGrrrol::updateModel() {
+void zap::AngryGrrrol::calcMdl_Base() {
     mModel->update(mPos, mAngle, mScale);
 }

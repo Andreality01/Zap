@@ -19,7 +19,7 @@ public:
     bool execute() override;
     bool draw() override;
     
-    void updateModel();
+    void calcMdl_Base() override;
     
     static const ActorCollisionCheck::CollisionData cCollisionData;
     
