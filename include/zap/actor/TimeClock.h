@@ -14,13 +14,11 @@ public:
     TimeClock(const ActorCreateParam& param);
     ~TimeClock() override = default;
     
-    // basic lifecycle funcs:
     Result create() override;
     bool execute() override;
     bool draw() override; 
-    
-    // custom funcs
-    void updateModel();
+
+    void updateModel() const;
     void collect();
     
     static const ActorCollisionCheck::CollisionData cCollisionData;

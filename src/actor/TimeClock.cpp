@@ -32,9 +32,8 @@ const ActorCollisionCheck::CollisionData zap::TimeClock::cCollisionData = {
         CC::cDamageFrom_SpinFall
     ),
     .status = CC::cStatus_None,
-    .callback = [](ActorCollisionCheck* cc_self, ActorCollisionCheck* cc_other) { 
-        TimeClock* self = cc_self->getOwner<TimeClock>();
-        if (self != nullptr)
+    .callback = [](ActorCollisionCheck* cc_self, ActorCollisionCheck* cc_other) {
+        if (TimeClock* self = cc_self->getOwner<TimeClock>(); self != nullptr)
             self->collect();
     }
 };
@@ -46,13 +45,11 @@ zap::TimeClock::TimeClock(const ActorCreateParam& param)
 { }
 
 ActorBase::Result zap::TimeClock::create() {
-    // load it first
-    // szs name, then model name inside
+    // Model
     mModel = AnimModel::create("timeclock", "timeclockA");
-    // make sure it appears on the first frame
-    updateModel();
+    updateModel(); // make sure it appears on the first frame
 
-    // make a hitbox
+    // Hitbox
     mCollisionCheck.set(this, cCollisionData);
     reviveCollisionCheck();
     
@@ -74,20 +71,20 @@ bool zap::TimeClock::draw() {
     return true;
 }
 
-void zap::TimeClock::updateModel() {
+void zap::TimeClock::updateModel() const {
     mModel->update(mPos, mAngle, mScale);
 }
 
 void zap::TimeClock::collect() {
     // spawn puff effect
-    sead::Vector3f effectPos = mPos + sead::Vector3f(0.0f, -12.0f, 0.0f);
+    const sead::Vector3f effectPos = mPos + sead::Vector3f(0.0f, -12.0f, 0.0f);
     EffectCreateUtil::createEffect(RP_FlagPass_1, &effectPos);
     
     // play a sound effect
     GameAudio::getAudioObjMap()->startSound("SE_SYS_CONTINUE_DONE", mPos);
     
     // add the time
-    u16 timeDelta = mParam0 & 0xFFF; // Nybbles 10-12
+    const u16 timeDelta = mParam0 & 0xFFF; // Nybbles 10-12
     CourseTimer::instance()->addTimeLimitSeconds(timeDelta);
     
     // bye!
