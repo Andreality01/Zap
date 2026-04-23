@@ -90,9 +90,8 @@ bool zap::FlyBones::execute() {
     
     executeState();
     
-    // Turn to face the player
-    sead::Vector2f distanceToPlayer;
-    if (searchNearPlayer(distanceToPlayer) != -1) {
+    // Search for a player nearby
+    if (sead::Vector2f distanceToPlayer; searchNearPlayer(distanceToPlayer) != -1) {
         // Found a player, face him
         mDirection = distanceToPlayer.x > 0 ? cDirType_Right : cDirType_Left;
     }
@@ -145,10 +144,6 @@ bool zap::FlyBones::createIceActor() {
 
 // Player stomp
 void zap::FlyBones::vsPlayerHitCheck_Normal(ActorCollisionCheck* cc_self, ActorCollisionCheck* cc_other) {
-    // The callback gets a pointer to the specific hitbox which just touched us
-    // Get the actor which owns that hitbox
-    Actor* other = cc_other->getOwner();
-    
     /// IM ANTIFUMI -joe 2026
     // this just checks what type of hit just occurred
     switch (fumiCheck(cc_self, cc_other, cFumiSeType_Normal)) {
@@ -172,8 +167,6 @@ void zap::FlyBones::vsPlayerHitCheck_Normal(ActorCollisionCheck* cc_self, ActorC
 
 // Same as above, but for Yoshi
 void zap::FlyBones::vsYoshiHitCheck_Normal(ActorCollisionCheck* cc_self, ActorCollisionCheck* cc_other) {
-    Actor* other = cc_other->getOwner();
-    
     switch (fumiCheck(cc_self, cc_other, cFumiSeType_Normal)) {
         case cFumiType_Fumi: {
             loseWings();
