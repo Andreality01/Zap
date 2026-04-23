@@ -45,7 +45,6 @@ const Profile* zap::AngryGrrrol::cProfile = zap::getRegistrar()->newProfile<zap:
 zap::AngryGrrrol::AngryGrrrol(const ActorCreateParam& param)
     : Enemy(param)
     , mModel(nullptr)
-    , mEffectSparks()
     , mTouchingWall(false)
 { }
 
