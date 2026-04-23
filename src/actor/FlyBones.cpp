@@ -79,7 +79,7 @@ ActorBase::Result zap::FlyBones::create() {
     
     changeState(StateID_Idle);
     
-    updateModel();
+    calcMdl_Base();
     
     return cResult_Success;
 }
@@ -98,7 +98,7 @@ bool zap::FlyBones::execute() {
     }
     mAngle.y().chaseRest(cBaseAngleY[mDirection], sead::Mathf::deg2idx(3.0f));
     
-    updateModel();
+    calcMdl_Base();
     
     return true;
 }
@@ -109,7 +109,7 @@ bool zap::FlyBones::draw() {
     return true;
 }
 
-void zap::FlyBones::updateModel() {
+void zap::FlyBones::calcMdl_Base() {
     mBodyModel->update(mPos, mAngle, mScale, !isState(StateID_Ice));
     mWingsModel->update(mPos + sead::Vector3f(0.0f, 8.0f, 0.0f), mAngle, mScale, !isState(StateID_Ice));
 }

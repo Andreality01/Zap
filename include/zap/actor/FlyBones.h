@@ -22,13 +22,13 @@ public:
     bool draw() override;
     
     bool createIceActor() override;
+    void calcMdl_Base() override;
     
     void vsPlayerHitCheck_Normal(ActorCollisionCheck* cc_self, ActorCollisionCheck* cc_other) override;
     void vsYoshiHitCheck_Normal(ActorCollisionCheck* cc_self, ActorCollisionCheck* cc_other) override;
     
     bool hitCallback_Fire(ActorCollisionCheck* cc_self, ActorCollisionCheck* cc_other) override;
     
-    void updateModel();
     void loseWings();
 
     static const ActorCreateInfo cCreateInfo;
