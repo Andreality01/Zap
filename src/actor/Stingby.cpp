@@ -118,7 +118,7 @@ bool zap::Stingby::execute() {
     
     executeState();
     
-    // We dont want to do these things while dead or frozen etc
+    // We don't want to do these things while dead or frozen etc
     if (isState(StateID_Idle) || isState(StateID_Notice) || isState(StateID_Chase) || isState(StateID_Return)) {
         // Turn towards the target direction
         mAngle.y().chaseRest(cBaseAngleY[mDirection], sead::Mathf::deg2idx(cTurnRate));
@@ -143,8 +143,8 @@ bool zap::Stingby::execute() {
     // Accurately track the model with the hitbox via bone
     sead::Matrix34f mtx;
     mModel->getModel()->getBoneWorldMatrix(mJointBoneIdx, &mtx);
-    
-    sead::Vector3f hitboxPos = mtx.getTranslation() - mPos;
+
+    const sead::Vector3f hitboxPos = mtx.getTranslation() - mPos;
     mCollisionCheck.setCenterOffsetX(hitboxPos.x);
     mCollisionCheck.setCenterOffsetY(hitboxPos.y);
     
@@ -156,15 +156,9 @@ bool zap::Stingby::execute() {
 }
 
 bool zap::Stingby::createIceActor() {
-    sead::Vector3f pos = {
-        mPos.x,
-        mPos.y - 14.0f,
-        mPos.z
-    };
-    
     IceInfo info = { 
         IceInfo::makeParam(cIceType_Square),
-        pos,
+        { mPos.x, mPos.y - 14.0f, mPos.z },
         mScale * cInvScaleFactor * 1.5f,
         nullptr
     };
@@ -177,7 +171,7 @@ void zap::Stingby::setIceAnm() {
         mModel->setAnm("fly_idle", 0.0f);
         
         // Random frame, since we're manually setting the anim we don't want all to look the same
-        f32 maxFrame = mModel->getCurSklAnim()->getFrameCtrl().getFrameMax();
+        const f32 maxFrame = mModel->getCurSklAnim()->getFrameCtrl().getFrameMax();
         mModel->getCurSklAnim()->getFrameCtrl().setFrame(
             sead::GlobalRandom::instance()->getF32() * maxFrame
         );
@@ -262,7 +256,7 @@ void zap::Stingby::executeState_Idle() {
     
     // Idle pause (0.2% chance per frame)
     // Smoothly lerp patrol speed for inertia
-    const f32 lerpFactor = 0.18f;
+    constexpr f32 lerpFactor = 0.18f;
     if (mIdlePauseTimer > 0) {
         mIdlePauseTimer--;
         mPatrolSpeed += (0.0f - mPatrolSpeed) * lerpFactor;
@@ -385,7 +379,7 @@ void zap::Stingby::executeState_Return() {
     // Determine which boundary is closest to fly towards
     const f32 targetX = (mPos.x < leftBound) ? leftBound : rightBound;
 
-    const f32 returnSpeed = 1.0f; 
+    constexpr f32 returnSpeed = 1.0f;
     const f32 targetVelX = (mPos.x < targetX) ? returnSpeed : -returnSpeed;
 
     // x-inertia
