@@ -56,12 +56,12 @@ zap::Biddybud::Biddybud(const ActorCreateParam& param)
     , mModel(nullptr)
     , mYoshiEatData(mActorUniqueID)
     , mChibiYoshiEatData(mActorUniqueID)
-    , mMovementHandler()
 { }
 
 ActorBase::Result zap::Biddybud::create() {
-    mModel = JointBlendModel::create("tenten_w", "tenten_w", 3, 1, 1);
+    // Model setup
     mScale = sead::Vector3f(cScaleFactor, cScaleFactor, cScaleFactor);
+    mModel = JointBlendModel::create("tenten_w", "tenten_w", 3, 1, 1);
     mModel->playTexAnim("bud");
     mModel->playTexSrtAnim("FlyWait");
     mModel->playSklAnim("FlyWait");
@@ -80,7 +80,7 @@ ActorBase::Result zap::Biddybud::create() {
         tk::fatal("Biddybud movement type was out of bounds");
     }
     const ParentMovementType movementType = static_cast<ParentMovementType>(nybble20);
-    u32 movementMask = mMovementHandler.getTypeMask(movementType);
+    const u32 movementMask = mMovementHandler.getTypeMask(movementType);
     mMovementHandler.link(mPos, movementMask, mParamEx.course.movement_id); // nybble 21-22
     
     // Yoshi eat ability
@@ -128,15 +128,9 @@ void zap::Biddybud::calcMdl_Base() {
 }
 
 bool zap::Biddybud::createIceActor() {
-    sead::Vector3f pos = {
-        mPos.x,
-        mPos.y - 8.0f,
-        mPos.z
-    };
-    
     IceInfo info = { 
         IceInfo::makeParam(cIceType_Square),
-        pos,
+        { mPos.x, mPos.y - 8.0f, mPos.z },
         mScale * cInvScaleFactor * 1.5f,
         nullptr
     };

@@ -36,9 +36,9 @@ public:
     DECLARE_STATE_VIRTUAL_ID_OVERRIDE(Biddybud, DieOther)
 
 private:
+    JointBlendModel* mModel;
     EnemyEatData mYoshiEatData;
     EnemyChibiYoshiEatData mChibiYoshiEatData;
-    JointBlendModel* mModel;
     ParentMovementMgr mMovementHandler;
 };
 
