@@ -108,7 +108,7 @@ ActorBase::Result zap::Stingby::create() {
     // Let's go!
     changeState(Stingby::StateID_Idle);
 
-    updateModel();
+    calcMdl_Normal();
     return cResult_Success;
 }
 
@@ -138,7 +138,7 @@ bool zap::Stingby::execute() {
         
     }
 
-    updateModel();
+    calcMdl_Normal();
     
     // Accurately track the model with the hitbox via bone
     sead::Matrix34f mtx;
@@ -184,7 +184,7 @@ void zap::Stingby::setIceAnm() {
     }
 }
 
-void zap::Stingby::updateModel() {
+void zap::Stingby::calcMdl_Base() {
     mModel->update(mPos, mAngle, mScale, !isState(StateID_Ice)); // don't animate if we're frozen
 }
 

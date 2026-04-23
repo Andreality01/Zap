@@ -22,11 +22,10 @@ public:
 
     bool createIceActor() override;
     void setIceAnm() override;
+    void calcMdl_Base() override;
     
     void vsPlayerHitCheck_Normal(ActorCollisionCheck* cc_self, ActorCollisionCheck* cc_other) override;
     void vsYoshiHitCheck_Normal(ActorCollisionCheck* cc_self, ActorCollisionCheck* cc_other) override;
-    
-    void updateModel();
 
     static const ActorCollisionCheck::CollisionData cCollisionData;
 
