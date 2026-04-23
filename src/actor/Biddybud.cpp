@@ -93,7 +93,7 @@ ActorBase::Result zap::Biddybud::create() {
 
     changeState(StateID_Idle);
 
-    updateModel();
+    calcMdl_Base();
     
     return cResult_Success;
 }
@@ -111,7 +111,7 @@ bool zap::Biddybud::execute() {
     
     executeState();
 
-    updateModel();
+    calcMdl_Base();
     
     // TODO: Track skeletal anim?
     
@@ -123,7 +123,7 @@ bool zap::Biddybud::draw() {
     return true;
 }
 
-void zap::Biddybud::updateModel() {
+void zap::Biddybud::calcMdl_Base() {
     mModel->update(mPos + sead::Vector3f(0.0f, -8.0f, 0.0f), mAngle, mScale, !isState(StateID_Ice));
 }
 
