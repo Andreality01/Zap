@@ -9,5 +9,5 @@ red::Registrar* zap::getRegistrar() {
 }
 
 void main() {
-    tk::print("Welcome to ZAP\n");
+    tk::println("Welcome to ZAP");
 }
