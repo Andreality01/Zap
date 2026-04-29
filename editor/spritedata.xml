@@ -104,5 +104,33 @@
         <value nybble="21-22" title="Movement ID"/>
     </sprite>
 
-
+	<sprite string_id="zap:jumboray" name="Jumbo Ray">
+		<value nybble="5-6" title="Altitude" comment="In tiles."/>
+		<list nybble="7" title="Horizontal Direction">
+			<entry value="0">Right</entry>
+			<entry value="1">Left</entry>
+		</list>
+		<list nybble="8" title="Vertical Direction">
+			<entry value="0">Up</entry>
+			<entry value="1">Down</entry>
+		</list>
+		<value nybble="9-10" title="Arc Duration" comment="In seconds from the start point to when it reaches the same Y altitude at the end. Essentially changes the width of the arc."/>
+	</sprite>
+	
+	<sprite string_id="zap:jumborayspawner" name="Jumbo Ray Spawner">
+		<value nybble="5-6" title="Altitude" comment="In tiles."/>
+		<list nybble="7" title="Horizontal Direction">
+			<entry value="0">Right</entry>
+			<entry value="1">Left</entry>
+		</list>
+		<list nybble="8" title="Vertical Direction">
+			<entry value="0">Up</entry>
+			<entry value="1">Down</entry>
+		</list>
+		<value nybble="9-10" title="Arc Duration" comment="In seconds from the start point to when it reaches the same Y altitude at the end. Essentially changes the width of the arc."/>
+		
+		<value nybble="1-2" title="Interval" comment="How many seconds between each spawn."/>
+		<value nybble="3" title="Limit" comment="If set, will stop spawning after this many."/>
+		<value nybble="21-22" title="Triggering Event ID" comment="If set, will only spawn when this event is active."/>
+	</sprite>
 </sprites>
