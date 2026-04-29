@@ -4,6 +4,7 @@
     Name: "Zap",
     Type: "Standard",
     Version: "1.0.0",
+    Description: "Zenith Actor Pack",
     
     SourceDirs: [
         "src"
