@@ -133,4 +133,14 @@
 		<value nybble="3" title="Limit" comment="If set, will stop spawning after this many."/>
 		<value nybble="21-22" title="Triggering Event ID" comment="If set, will only spawn when this event is active."/>
 	</sprite>
+	
+	<sprite string_id="zap:flaptor" name="Flaptor">
+		<list nybble="5" title="Movement type">
+			<entry value="0">Static</entry>
+            <entry value="1">Horizontal</entry>
+            <entry value="2">Vertical</entry>
+        </list>
+		<value nybble="6" title="Patrol range" comment="In tiles."/>
+		<value nybble="7" title="Return speed"/>
+	</sprite>
 </sprites>
