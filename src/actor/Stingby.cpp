@@ -402,7 +402,6 @@ void zap::Stingby::executeState_DieOther() {
     // Wait for squish to finish before deleting
     if (mModel->getCurSklAnim()->getFrameCtrl().isStop()) {
         deleteRequest();
-        removeCollisionCheck();
     }
 }
 
