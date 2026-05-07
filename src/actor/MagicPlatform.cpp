@@ -37,7 +37,7 @@ ActorBase::Result zap::MagicPlatform::create() {
     u8 locationID = (red::SpriteUtil::getNybble11(this) << 4) | red::SpriteUtil::getNybble12(this);
     
     // find location
-    const CourseDataFile* area = CourseData::instance()->getFile(CourseInfo::instance()->getAreaNo());
+    const CourseDataFile* area = CourseData::instance()->getFile(CourseInfo::instance()->getFileNo());
     const Location* location = area->getLocation(nullptr, locationID);
     
     if (location == nullptr) {
