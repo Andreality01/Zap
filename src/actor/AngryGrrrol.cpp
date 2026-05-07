@@ -89,7 +89,7 @@ ActorBase::Result zap::AngryGrrrol::create() {
         mBgCheckObj.getSensorFlag(cDirType_Down).setBit(F::cBit_BreakBlocks);
     }
     
-    calcMdl_Base();
+    calcMdl_Normal();
     return cResult_Success;
 }
 
@@ -149,7 +149,7 @@ bool zap::AngryGrrrol::execute() {
     
     // Rotate model
     mAngle.z() -= sead::Mathf::deg2idx(3.1f * mSpeed.x);
-    calcMdl_Base();
+    calcMdl_Normal();
     
     return true;
 }
