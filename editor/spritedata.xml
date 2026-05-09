@@ -18,6 +18,10 @@
 	    
 	</sprite>
 
+	<sprite string_id="zap:cataquack" name="Cataquack">
+	    
+	</sprite>
+
 	<sprite string_id="zap:biddybud" name="Biddybud">
 		<list nybble="5" title="Color">
             <entry value="0">Red</entry>
