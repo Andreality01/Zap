@@ -229,4 +229,7 @@
 		</list>
 		<value nybble="21-22" title="Movement ID"/>
 	</sprite>
+	
+	<sprite string_id="zap:donut_block" name="Donut Block" notes="An actor version of the donut block.">
+	</sprite>
 </sprites>
