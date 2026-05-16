@@ -235,4 +235,7 @@
 	
 	<sprite string_id="zap:donut_block" name="Donut Block" notes="An actor version of the donut block.">
 	</sprite>
+	
+	<sprite string_id="zap:frozen_donut_block" name="Frozen Donut Block">
+	</sprite>
 </sprites>
