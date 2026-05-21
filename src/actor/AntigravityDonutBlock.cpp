@@ -30,8 +30,9 @@ zap::AntigravityDonutBlock::AntigravityDonutBlock(const ActorCreateParam& param)
 { }
 
 ActorBase::Result zap::AntigravityDonutBlock::create() {
-    red::ActorDonutBlock::create();
+    zap::ActorDonutBlock::create();
     
+    // TODO: Configurable
     mLiftSpeed = 1.0f;
     
     return cResult_Success;

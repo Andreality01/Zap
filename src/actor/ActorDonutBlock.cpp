@@ -17,11 +17,42 @@ const ActorCreateInfo zap::ActorDonutBlock::cCreateInfo = {
 };
 
 Profile* zap::ActorDonutBlock::sProfile = zap::getRegistrar()->newProfile<zap::ActorDonutBlock>("donut_block")
-    .resources<"obj_chikuwa_block">(ProfileInfo::cResType_Course)
+    .resources<"obj_chikuwa_block", "obj_widedn2_block", "obj_widedn3_block">(ProfileInfo::cResType_Course)
     .flag(Profile::cFlag_DrawCullCheck)
     .createInfo(&cCreateInfo)
     .build();
 
 zap::ActorDonutBlock::ActorDonutBlock(const ActorCreateParam& param)
     : red::ActorDonutBlock(param)
+    , mLength(0)
 { }
+
+ActorBase::Result zap::ActorDonutBlock::create() {
+    // Setting: Length
+    mLength = red::SpriteUtil::getNybble5(this);
+    
+    Result result = red::ActorDonutBlock::create();
+    
+    u8 lengthTiles = mLength + 1;
+    
+    mCollider.getPoints()[0].x = -8.0f * lengthTiles;
+    mCollider.getPoints()[1].x = 8.0f * lengthTiles;
+    
+    mSize.multScalar(lengthTiles);
+    mVisibleAreaSize.multScalar(lengthTiles);
+    
+    return result;
+}
+
+void zap::ActorDonutBlock::loadActorRes() {
+    static constexpr sead::SafeArray<const char*, 3> cResources = {
+        "obj_chikuwa_block",
+        "obj_widedn2_block",
+        "obj_widedn3_block"
+    };
+    
+    mModel = AnimModel::create(cResources[mLength], cResources[mLength], 2, 2, 2, 2, 2);
+    mTexAnim = mModel->getTexAnim(0);
+    mTexAnim->getFrameCtrl().setPlayMode(FrameCtrl::cMode_NoRepeat);
+    mTexAnim->getFrameCtrl().setFrame(0.0f);
+}

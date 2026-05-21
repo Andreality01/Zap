@@ -16,7 +16,7 @@ const ActorCreateInfo zap::FrozenDonutBlock::cCreateInfo = {
 };
 
 Profile* zap::FrozenDonutBlock::sProfile = zap::getRegistrar()->newProfile<zap::FrozenDonutBlock>("frozen_donut_block")
-    .resources<"obj_frozend_block">(ProfileInfo::cResType_Course)
+    .resources<"obj_frozend_block", "obj_frozdn2_block", "obj_frozdn3_block">(ProfileInfo::cResType_Course)
     .flag(Profile::cFlag_DrawCullCheck)
     .createInfo(&cCreateInfo)
     .build();
@@ -26,7 +26,7 @@ zap::FrozenDonutBlock::FrozenDonutBlock(const ActorCreateParam& param)
 { }
 
 ActorBase::Result zap::FrozenDonutBlock::create() {
-    Result result = red::ActorDonutBlock::create();
+    Result result = zap::ActorDonutBlock::create();
     
     mCollider.setAttr(BgUnitCode::cIce);
     
@@ -34,7 +34,13 @@ ActorBase::Result zap::FrozenDonutBlock::create() {
 }
 
 void zap::FrozenDonutBlock::loadActorRes() {
-    mModel = AnimModel::create("obj_frozend_block", "obj_frozend_block", 1, 1);
+    static constexpr sead::SafeArray<const char*, 3> cResources = {
+        "obj_frozend_block",
+        "obj_frozdn2_block",
+        "obj_frozdn3_block"
+    };
+    
+    mModel = AnimModel::create(cResources[mLength], cResources[mLength], 2, 2, 2, 2, 2);
     mTexAnim = mModel->getTexAnim(0);
     mTexAnim->getFrameCtrl().setPlayMode(FrameCtrl::cMode_NoRepeat);
     mTexAnim->getFrameCtrl().setFrame(0.0f);

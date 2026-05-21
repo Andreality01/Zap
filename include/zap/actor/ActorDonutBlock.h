@@ -14,7 +14,14 @@ public:
     ActorDonutBlock(const ActorCreateParam& param);
     ~ActorDonutBlock() override = default;
     
+    Result create() override;
+    
+    void loadActorRes() override;
+    
     static const ActorCreateInfo cCreateInfo;
+    
+protected:
+    u8 mLength;
 };
 
 }
