@@ -4,14 +4,14 @@
 	</sprite>
 	
 	<sprite string_id="zap:timeclock" name="Time Clock">
-		<value nybble="10-12" title="Time Amount"/>
+		<value nybble="10-12" title="Time Amount" category="behavior"/>
 	</sprite>
 	
 	<sprite string_id="zap:angrygrrrol" name="Angry Grrrol">
-		<value nybble="5" title="Maximum Speed"/>
-		<value nybble="6" title="Acceleration"/>
-		<checkbox nybble="7" title="Break Blocks (Sides)" comment="Destroys blocks on collision from the side."/>
-		<checkbox nybble="8" title="Break Blocks (Down)" comment="Destroys blocks below."/>
+		<value nybble="5" title="Maximum Speed" category="behavior"/>
+		<value nybble="6" title="Acceleration" category="behavior"/>
+		<checkbox nybble="7" title="Break Blocks (Sides)" comment="Destroys blocks on collision from the side." category="behavior"/>
+		<checkbox nybble="8" title="Break Blocks (Down)" comment="Destroys blocks below." category="behavior"/>
 	</sprite>
 	
 	<sprite string_id="zap:flybones" name="Fly Bones">
@@ -23,14 +23,14 @@
 	</sprite>
 
 	<sprite string_id="zap:biddybud" name="Biddybud">
-		<list nybble="5" title="Color">
+		<list nybble="5" title="Color" category="behavior">
             <entry value="0">Red</entry>
             <entry value="1">Yellow</entry>
             <entry value="2">Green</entry>
             <entry value="3">Blue</entry>
             <entry value="4">Pink</entry>
         </list>
-		<list nybble="20" title="Movement Type">
+		<list nybble="20" title="Movement Type" category="movement">
 			<entry value="0">None</entry>
 			<entry value="1">Sway Or Spin (68, 69, 116, 118)</entry>
 			<entry value="2">Bolt (238)</entry>
@@ -43,12 +43,12 @@
 			<entry value="10">Rolling Hill (265)</entry>
 			<entry value="11">Moving Mushroom Lift (210)</entry>
 		</list>
-        <value nybble="21-22" title="Movement ID"/>
+        <value nybble="21-22" title="Movement ID" id_type="movement" category="movement"/>
 	</sprite>
 
 	<sprite string_id="zap:note" name="Music Note" notes="A note for the clef challenge.">
-        <value nybble="1-2" title="Manager ID"/>
-        <list nybble="3" title="Note Sound">
+        <value nybble="1-2" title="Manager ID" id_type="clef" category="behavior"/>
+        <list nybble="3" title="Note Sound" category="behavior">
             <entry value="0">First C</entry>
             <entry value="1">D</entry>
             <entry value="2">E</entry>
@@ -58,7 +58,7 @@
             <entry value="6">B</entry>
             <entry value="7">Second C</entry>
         </list>
-        <list nybble="20" title="Movement Type">
+        <list nybble="20" title="Movement Type" category="movement">
 			<entry value="0">None</entry>
 			<entry value="1">Sway Or Spin (68, 69, 116, 118)</entry>
 			<entry value="2">Bolt (238)</entry>
@@ -71,13 +71,13 @@
 			<entry value="10">Rolling Hill (265)</entry>
 			<entry value="11">Moving Mushroom Lift (210)</entry>
 		</list>
-        <value nybble="21-22" title="Movement ID"/>
+        <value nybble="21-22" title="Movement ID" id_type="movement" category="movement"/>
     </sprite>
 
 	<sprite string_id="zap:clef" name="Clef" notes="A clef that spawns multiple music notes when collected. Collect them all within the time limit for an item!">
-        <value nybble="1-2" title="Manager ID"/>
-        <value nybble="3-4" title="Target Note Count" comment="The required number of notes with a matching ID to activate an event."/>
-        <list nybble="5" title="Powerup" comment="The powerup reward once all notes are collected.">
+        <value nybble="1-2" title="Manager ID" id_type="clef" category="behavior"/>
+        <value nybble="3-4" title="Target Note Count" comment="The required number of notes with a matching ID to activate an event." category="behavior"/>
+        <list nybble="5" title="Powerup" comment="The powerup reward once all notes are collected." category="behavior">
             <entry value="0">Mushroom</entry>
             <entry value="1">Fire Flower</entry>
             <entry value="2">Ice Flower</entry>
@@ -91,8 +91,8 @@
             <entry value="10">2nd star coin</entry>
             <entry value="11">3rd star coin</entry>
         </list>
-        <value nybble="6-7" title="Time Limit" comment="In seconds."/>
-        <list nybble="20" title="Movement Type">
+        <value nybble="6-7" title="Time Limit" comment="In seconds." category="behavior"/>
+        <list nybble="20" title="Movement Type" category="movement">
 			<entry value="0">None</entry>
 			<entry value="1">Sway Or Spin (68, 69, 116, 118)</entry>
 			<entry value="2">Bolt (238)</entry>
@@ -105,57 +105,57 @@
 			<entry value="10">Rolling Hill (265)</entry>
 			<entry value="11">Moving Mushroom Lift (210)</entry>
 		</list>
-        <value nybble="21-22" title="Movement ID"/>
+        <value nybble="21-22" title="Movement ID" id_type="movement" category="movement"/>
     </sprite>
 
 	<sprite string_id="zap:jumboray" name="Jumbo Ray">
-		<value nybble="5-6" title="Altitude" comment="In tiles."/>
-		<list nybble="7" title="Horizontal Direction">
+		<value nybble="5-6" title="Altitude" comment="In tiles." category="behavior"/>
+		<list nybble="7" title="Horizontal Direction" category="behavior">
 			<entry value="0">Right</entry>
 			<entry value="1">Left</entry>
 		</list>
-		<list nybble="8" title="Vertical Direction">
+		<list nybble="8" title="Vertical Direction" category="behavior">
 			<entry value="0">Up</entry>
 			<entry value="1">Down</entry>
 		</list>
-		<value nybble="9-10" title="Arc Duration" comment="In seconds from the start point to when it reaches the same Y altitude at the end. Essentially changes the width of the arc."/>
+		<value nybble="9-10" title="Arc Duration" comment="In seconds from the start point to when it reaches the same Y altitude at the end. Essentially changes the width of the arc." category="behavior"/>
 	</sprite>
 	
 	<sprite string_id="zap:jumborayspawner" name="Jumbo Ray Spawner">
-		<value nybble="5-6" title="Altitude" comment="In tiles."/>
-		<list nybble="7" title="Horizontal Direction">
+		<value nybble="5-6" title="Altitude" comment="In tiles." category="behavior"/>
+		<list nybble="7" title="Horizontal Direction" category="behavior">
 			<entry value="0">Right</entry>
 			<entry value="1">Left</entry>
 		</list>
-		<list nybble="8" title="Vertical Direction">
+		<list nybble="8" title="Vertical Direction" category="behavior">
 			<entry value="0">Up</entry>
 			<entry value="1">Down</entry>
 		</list>
-		<value nybble="9-10" title="Arc Duration" comment="In seconds from the start point to when it reaches the same Y altitude at the end. Essentially changes the width of the arc."/>
+		<value nybble="9-10" title="Arc Duration" comment="In seconds from the start point to when it reaches the same Y altitude at the end. Essentially changes the width of the arc." category="behavior"/>
 		
-		<value nybble="1-2" title="Interval" comment="How many seconds between each spawn."/>
-		<value nybble="3" title="Limit" comment="If set, will stop spawning after this many."/>
-		<value nybble="21-22" title="Triggering Event ID" comment="If set, will only spawn when this event is active."/>
+		<value nybble="1-2" title="Interval" comment="How many seconds between each spawn." category="behavior"/>
+		<value nybble="3" title="Limit" comment="If set, will stop spawning after this many." category="behavior"/>
+		<value nybble="21-22" title="Triggering Event ID" comment="If set, will only spawn when this event is active." id_type="event" category="events"/>
 	</sprite>
 	
 	<sprite string_id="zap:flaptor" name="Flaptor">
-		<list nybble="5" title="Movement type">
+		<list nybble="5" title="Movement type" category="behavior">
 			<entry value="0">Static</entry>
             <entry value="1">Horizontal</entry>
             <entry value="2">Vertical</entry>
         </list>
-		<value nybble="6" title="Patrol range" comment="In tiles."/>
-		<value nybble="7" title="Return speed"/>
+		<value nybble="6" title="Patrol range" comment="In tiles." category="behavior"/>
+		<value nybble="7" title="Return speed" category="behavior"/>
 	</sprite>
 	
 	<sprite string_id="zap:magicplatform" name="Magic Platform" notes="Copies tiles from a location and makes them movable.">
-		<value nybble="11-12" title="Location ID"/>
-		<list nybble="10" title="Collider type">
+		<value nybble="11-12" title="Location ID" id_type="location" category="behavior"/>
+		<list nybble="10" title="Collider type" category="behavior">
 			<entry value="0">Solid</entry>
 			<entry value="1">Solid-on-top</entry>
 			<entry value="2">None</entry>
 		</list>
-		<list nybble="7-8" title="Interaction Type" comment="Presets for surface types and other properties.">
+		<list nybble="7-8" title="Interaction Type" comment="Presets for surface types and other properties." category="behavior">
 			<entry value="0">Normal</entry>
 			<entry value="1">Coin</entry>
 			<entry value="2">Green Coin</entry>
@@ -199,7 +199,7 @@
 			<entry value="40">Urchin</entry>
 			<entry value="41">Invisible Block</entry>
 		</list>
-		<list nybble="9" title="Surface Type" comment="Surface type to override the one set by the &quot;Type&quot; option.">
+		<list nybble="9" title="Surface Type" comment="Surface type to override the one set by the &quot;Type&quot; option." category="behavior">
 			<entry value="0">Default</entry>
 			<entry value="1">Ice</entry>
 			<entry value="2">Snow</entry>
@@ -214,7 +214,7 @@
 			<entry value="11">Water</entry>
 			<entry value="12">Beanstalk Leaf</entry>
 		</list>
-		<list nybble="20" title="Movement Type">
+		<list nybble="20" title="Movement Type" category="movement">
 			<entry value="0">None</entry>
 			<entry value="1">Sway Or Spin (68, 69, 116, 118)</entry>
 			<entry value="2">Bolt (238)</entry>
@@ -227,14 +227,14 @@
 			<entry value="10">Rolling Hill (265)</entry>
 			<entry value="11">Moving Mushroom Lift (210)</entry>
 		</list>
-		<value nybble="21-22" title="Movement ID"/>
+		<value nybble="21-22" title="Movement ID" id_type="movement" category="movement"/>
 	</sprite>
 	
 	<sprite string_id="zap:antigravity_donut_block" name="Antigravity Donut Block">
 	</sprite>
 	
 	<sprite string_id="zap:donut_block" name="Donut Block" notes="An actor version of the donut block.">
-		<list nybble="5" title="Width">
+		<list nybble="5" title="Width" category="behavior">
 			<entry value="0">1 Tile</entry>
 			<entry value="1">2 Tiles</entry>
 			<entry value="2">3 Tiles</entry>
@@ -242,7 +242,7 @@
 	</sprite>
 	
 	<sprite string_id="zap:frozen_donut_block" name="Frozen Donut Block">
-		<list nybble="5" title="Width">
+		<list nybble="5" title="Width" category="behavior">
 			<entry value="0">1 Tile</entry>
 			<entry value="1">2 Tiles</entry>
 			<entry value="2">3 Tiles</entry>
