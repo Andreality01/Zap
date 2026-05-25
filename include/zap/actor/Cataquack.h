@@ -12,7 +12,7 @@ class Cataquack : public Enemy {
     SEAD_RTTI_OVERRIDE(Cataquack, Enemy)
 
 public:
-    static Profile* cProfile;
+    static Profile* sProfile;
 
     Cataquack(const ActorCreateParam& param);
     ~Cataquack() override = default;

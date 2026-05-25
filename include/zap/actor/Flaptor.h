@@ -19,7 +19,7 @@ public:
     };
 
 public:
-    static Profile* cProfile;
+    static Profile* sProfile;
 
     Flaptor(const ActorCreateParam& param);
     ~Flaptor() override = default;

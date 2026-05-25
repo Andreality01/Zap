@@ -19,7 +19,7 @@ const ActorCreateInfo zap::JumboRay::cCreateInfo = {
     .flag = 0
 };
 
-Profile* zap::JumboRay::cProfile = zap::getRegistrar()->newProfile<zap::JumboRay>("jumboray")
+Profile* zap::JumboRay::sProfile = zap::getRegistrar()->newProfile<zap::JumboRay>("jumboray")
     .resources<"manjirou">(ProfileInfo::cResType_Course)
     .createInfo(&cCreateInfo)
     .build();

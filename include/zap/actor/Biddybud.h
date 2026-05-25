@@ -13,7 +13,7 @@ class Biddybud : public Enemy {
     SEAD_RTTI_OVERRIDE(Biddybud, Enemy)
 
 public:
-    static const Profile* cProfile;
+    static Profile* sProfile;
 
     Biddybud(const ActorCreateParam& param);
     ~Biddybud() override = default;

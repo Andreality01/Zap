@@ -10,7 +10,7 @@ class JumboRaySpawner : public Actor {
     SEAD_RTTI_OVERRIDE(JumboRaySpawner, Actor)
 
 public:
-    static Profile* cProfile;
+    static Profile* sProfile;
     
     JumboRaySpawner(const ActorCreateParam& param);
     ~JumboRaySpawner() override = default;

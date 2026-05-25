@@ -10,7 +10,7 @@ class AngryGrrrol : public Enemy {
     SEAD_RTTI_OVERRIDE(AngryGrrrol, Enemy);
 
 public:
-    static const Profile* cProfile;
+    static Profile* sProfile;
 
     AngryGrrrol(const ActorCreateParam& param);
     ~AngryGrrrol() override = default;

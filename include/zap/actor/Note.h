@@ -10,7 +10,7 @@ class Note : public Actor {
     SEAD_RTTI_OVERRIDE(Note, Actor);
 
 public:
-    static const Profile* cProfile;
+    static Profile* sProfile;
 
     Note(const ActorCreateParam& param);
     ~Note() override = default;

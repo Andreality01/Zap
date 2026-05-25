@@ -46,7 +46,7 @@ const CC::CollisionData zap::Biddybud::cCollisionData = {
     .callback = &Enemy::normal_collcheck
 };
 
-const Profile* zap::Biddybud::cProfile = zap::getRegistrar()->newProfile<zap::Biddybud>("biddybud")
+Profile* zap::Biddybud::sProfile = zap::getRegistrar()->newProfile<zap::Biddybud>("biddybud")
     .resources<"tenten_w">(ProfileInfo::cResType_Course)
     .createInfo(&cCreateInfo)
     .build();

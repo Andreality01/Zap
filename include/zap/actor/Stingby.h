@@ -11,7 +11,7 @@ class Stingby : public Enemy {
     SEAD_RTTI_OVERRIDE(Stingby, Enemy)
 
 public:
-    static const Profile* cProfile;
+    static Profile* sProfile;
 
     Stingby(const ActorCreateParam& param);
     ~Stingby() override = default;

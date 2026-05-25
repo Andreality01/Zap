@@ -12,7 +12,7 @@ class FlyBones : public Enemy {
     SEAD_RTTI_OVERRIDE(FlyBones, Enemy)
 
 public:
-    static const Profile* cProfile;
+    static Profile* sProfile;
 
     FlyBones(const ActorCreateParam& param);
     ~FlyBones() override = default;

@@ -20,7 +20,7 @@ const ActorCreateInfo zap::FlyBones::cCreateInfo = {
 };
 
 // Register it
-const Profile* zap::FlyBones::cProfile = zap::getRegistrar()->newProfile<zap::FlyBones>("flybones")
+Profile* zap::FlyBones::sProfile = zap::getRegistrar()->newProfile<zap::FlyBones>("flybones")
     .resources<"karon", "wing", "nokonokoB">(ProfileInfo::cResType_Course)
     .createInfo(&zap::FlyBones::cCreateInfo)
     .build();

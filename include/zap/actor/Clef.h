@@ -11,7 +11,7 @@ class Clef : public Actor {
     SEAD_RTTI_OVERRIDE(Clef, Actor);
 
 public:
-    static const Profile* cProfile;
+    static Profile* sProfile;
 
     Clef(const ActorCreateParam& param);    
     ~Clef() override = default;

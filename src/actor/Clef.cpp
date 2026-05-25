@@ -42,7 +42,7 @@ const CC::CollisionData zap::Clef::cCollisionData = {
     }
 };
 
-const Profile* zap::Clef::cProfile = zap::getRegistrar()->newProfile<zap::Clef>("clef")
+Profile* zap::Clef::sProfile = zap::getRegistrar()->newProfile<zap::Clef>("clef")
     .resources<"clef">(ProfileInfo::cResType_Course)
     .createInfo(&cCreateInfo)
     .flag(Profile::cFlag_DrawCullCheck)

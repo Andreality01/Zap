@@ -18,7 +18,7 @@ const ActorCreateInfo zap::JumboRaySpawner::cCreateInfo = {
     .flag = 0
 };
 
-Profile* zap::JumboRaySpawner::cProfile = zap::getRegistrar()->newProfile<JumboRaySpawner>("jumborayspawner")
+Profile* zap::JumboRaySpawner::sProfile = zap::getRegistrar()->newProfile<JumboRaySpawner>("jumborayspawner")
     .resources<"manjirou">(ProfileInfo::cResType_Course)
     .build();
 
@@ -75,7 +75,7 @@ void zap::JumboRaySpawner::spawnRay() {
     mSpawnedCount++;
     
     ActorCreateParam ray;
-    ray.profile = JumboRay::cProfile;
+    ray.profile = JumboRay::sProfile;
     ray.position = mPos;
     
     // forward our settings

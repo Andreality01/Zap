@@ -56,7 +56,7 @@ constexpr f32 cScaleFactor = 0.1f;
 constexpr f32 cAnimBlendTime = 10.0f;
 constexpr f32 cDefaultLaunchHeight = 8.0f; // in tiles
 
-Profile* zap::Cataquack::cProfile = zap::getRegistrar()->newProfile<zap::Cataquack>("cataquack")
+Profile* zap::Cataquack::sProfile = zap::getRegistrar()->newProfile<zap::Cataquack>("cataquack")
     .resources<"poihana">(ProfileInfo::cResType_Course)
     .createInfo(&cCreateInfo)
     .flag(Profile::Flag::cFlag_DrawCullCheck)

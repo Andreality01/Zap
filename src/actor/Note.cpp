@@ -6,7 +6,7 @@ SEAD_RTTI_OVERRIDE_IMPL(zap::Note, Actor);
 
 static constexpr f32 cScaleFactor = 0.17f;
 
-const Profile* zap::Note::cProfile = zap::getRegistrar()->newProfile<zap::Note>("note")
+Profile* zap::Note::sProfile = zap::getRegistrar()->newProfile<zap::Note>("note")
     .resources<"note">(ProfileInfo::cResType_Course)
     .flag(Profile::cFlag_DrawCullCheck)
     .build();

@@ -9,7 +9,7 @@ class TimeClock : public Actor {
     SEAD_RTTI_OVERRIDE(TimeClock, Actor)
 
 public:
-    static const Profile* cProfile;
+    static Profile* sProfile;
 
     TimeClock(const ActorCreateParam& param);
     ~TimeClock() override = default;

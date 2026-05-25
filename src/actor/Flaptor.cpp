@@ -50,7 +50,7 @@ const ActorCollisionCheck::CollisionData zap::Flaptor::cCollisionData = {
     .callback = &Enemy::normal_collcheck
 };
 
-Profile* zap::Flaptor::cProfile = zap::getRegistrar()->newProfile<zap::Flaptor>("flaptor")
+Profile* zap::Flaptor::sProfile = zap::getRegistrar()->newProfile<zap::Flaptor>("flaptor")
     .resources<"mokinger">(ProfileInfo::cResType_Course)
     .createInfo(&cCreateInfo)
     .build();
