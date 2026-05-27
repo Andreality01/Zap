@@ -18,9 +18,9 @@
 	    
 	</sprite>
 
-	<sprite string_id="zap:cataquack" name="Cataquack" notes="&lt;font color=&quot;blue&quot;&gt; &lt;i&gt;To the skies!&lt;/i&gt; &lt;/font&gt;">
-	    <value nybble="5-6" title="Launch knockback (X Speed)" comment="In tenths of a non-linear speed unit. (Directional)"/>
-	    <value nybble="7-8" title="Launch height (Y Speed)" comment="In tenths of a non-linear speed unit.&lt;br&gt; &lt;b&gt;Reference values:&lt;/b&gt; &lt;br&gt; 35 = 3.5 -> ~4 tiles (~7 as mini) &lt;br&gt; 45 = 4.5 -> ~8 tiles (~14 as mini) &lt;br&gt; 55 = 5.5 -> ~13 tiles (~21 as mini) &lt;br&gt; 60 = 6.0 -> ~16 tiles (~26 as mini) &lt;br&gt; 72 = 7.2 -> ~24 tiles (~39 as mini) &lt;br&gt; 82 = 8.2 -> ~32 tiles (~50 as mini) &lt;br&gt; 99 = 9.9 -> ~48 tiles (~72 as mini) &lt;br&gt; 119 = 11.9 -> ~64 tiles (~92 as mini) &lt;br&gt; 221 = 22.1 -> ~128 tiles (~188 as mini) &lt;br&gt; 255 = 25.5 -> ~149 tiles (~200+ as mini)"/>
+	<sprite string_id="zap:cataquack" name="Cataquack" notes="&lt;font color=&quot;cyan&quot;&gt; &lt;i&gt;To the skies!&lt;/i&gt; &lt;/font&gt;">
+	    <value nybble="5-6" title="Launch knockback (X Speed)" comment="In tenths of a non-linear speed unit. See Y speed for details. (Directional)" category="behavior"/>
+	    <value nybble="7-8" title="Launch height (Y Speed)" category="behavior" comment="In tenths of a non-linear speed unit.&lt;br&gt; &lt;b&gt;Reference values:&lt;/b&gt; &lt;br&gt; 35 = 3.5 -> ~4 tiles (~7 as mini) &lt;br&gt; 45 = 4.5 -> ~8 tiles (~14 as mini) &lt;br&gt; 55 = 5.5 -> ~13 tiles (~21 as mini) &lt;br&gt; 60 = 6.0 -> ~16 tiles (~26 as mini) &lt;br&gt; 72 = 7.2 -> ~24 tiles (~39 as mini) &lt;br&gt; 82 = 8.2 -> ~32 tiles (~50 as mini) &lt;br&gt; 99 = 9.9 -> ~48 tiles (~72 as mini) &lt;br&gt; 119 = 11.9 -> ~64 tiles (~92 as mini) &lt;br&gt; 221 = 22.1 -> ~128 tiles (~188 as mini) &lt;br&gt; 255 = 25.5 -> ~149 tiles (~200+ as mini)"/>
 	</sprite>
 
 	<sprite string_id="zap:biddybud" name="Biddybud">
@@ -248,5 +248,15 @@
 			<entry value="1">2 Tiles</entry>
 			<entry value="2">3 Tiles</entry>
 		</list>
+	</sprite>
+	
+	<sprite string_id="zap:string_bank" name="String Bank" notes="Stores an arbitrary 16-character string to be used by other sprites.">
+		<strybble nybble="1-24" title="String" category="behavior"/>
+		<layer title="Chain Type" category="behavior" type="list">
+			<entry value="0">Standalone/First in chain</entry>
+			<entry value="1">Second in chain</entry>
+			<entry value="2">Third (last) in chain</entry>
+		</layer>
+		<initialstate title="ID" type="value" category="behavior" id_type="string_bank"/>
 	</sprite>
 </sprites>

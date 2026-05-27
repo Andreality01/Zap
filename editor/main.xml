@@ -1,4 +1,6 @@
 <?xml version="1.0"?>
 <game name="Zap" version="1.0" description="Zenith Actor Pack">
+    <folder name="sprites" path="sprites" />
     <file name="spritedata" path="spritedata.xml" />
+    <file name="sprites" path="sprites.py" />
 </game>
