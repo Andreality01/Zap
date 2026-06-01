@@ -8,3 +8,4 @@ compile_commands.json
 .idea
 content/Common/course_res_pack
 content/Common/distant_view
+**/__pycache__
