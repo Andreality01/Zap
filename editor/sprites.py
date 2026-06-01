@@ -170,6 +170,19 @@ class SpriteImage_AntigravDonutBlock(SLib.SpriteImage_Static):
     def loadImages():
         SLib.loadIfNotInImageCache('DonutBlock', 'donut.png')
 
+class SpriteImage_StringBank(SLib.SpriteImage_Static):
+    def __init__(self, parent):
+        super().__init__(
+            parent,
+            4.0,
+            ImageCache['StringBank'],
+            (0, 0),
+        )
+
+    @staticmethod
+    def loadImages():
+        SLib.loadIfNotInImageCache('StringBank', 'string_bank.png')
+
 ImageClasses = {
     "zap:cataquack": SpriteImage_Cataquack,
     "zap:biddybud": SpriteImage_Biddybud,
@@ -181,4 +194,5 @@ ImageClasses = {
     "zap:donut_block": SpriteImage_DonutBlock,
     "zap:frozen_donut_block": SpriteImage_FrozenDonutBlock,
     "zap:antigravity_donut_block": SpriteImage_AntigravDonutBlock,
+    "zap:string_bank": SpriteImage_StringBank,
 }

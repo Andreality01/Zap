@@ -250,13 +250,18 @@
 		</list>
 	</sprite>
 	
-	<sprite string_id="zap:string_bank" name="String Bank" notes="Stores an arbitrary 16-character string to be used by other sprites.">
+	<sprite string_id="zap:string_bank" name="String Bank" notes="Stores an arbitrary 16-character string to be used by other actors.">
 		<strybble nybble="1-24" title="String" category="behavior"/>
-		<layer title="Chain Type" category="behavior" type="list">
-			<entry value="0">Standalone/First in chain</entry>
+		<layer title="Bank Type" mask="3" category="behavior" type="list">
+			<entry value="0">First in chain</entry>
 			<entry value="1">Second in chain</entry>
-			<entry value="2">Third (last) in chain</entry>
+			<entry value="2">Third in chain</entry>
 		</layer>
-		<initialstate title="ID" type="value" category="behavior" id_type="string_bank"/>
+		<layer title="Chain Count" mask="12" category="behavior" type="list">
+			<entry value="0">One</entry>
+			<entry value="1">Two</entry>
+			<entry value="2">Three</entry>
+		</layer>
+		<initialstate title="Bank ID" type="value" category="behavior" id_type="string_bank"/>
 	</sprite>
 </sprites>
