@@ -157,19 +157,6 @@ class SpriteImage_FrozenDonutBlock(SLib.SpriteImage_Static):
         
         super().paint(painter)
 
-class SpriteImage_AntigravDonutBlock(SLib.SpriteImage_Static):
-    def __init__(self, parent):
-        super().__init__(
-            parent,
-            4.0,
-            ImageCache['DonutBlock'],
-            (0, 0),
-        )
-
-    @staticmethod
-    def loadImages():
-        SLib.loadIfNotInImageCache('DonutBlock', 'donut.png')
-
 class SpriteImage_StringBank(SLib.SpriteImage_Static):
     def __init__(self, parent):
         super().__init__(
@@ -193,6 +180,5 @@ ImageClasses = {
     "zap:angrygrrrol": SpriteImage_AngryGrrrol,
     "zap:donut_block": SpriteImage_DonutBlock,
     "zap:frozen_donut_block": SpriteImage_FrozenDonutBlock,
-    "zap:antigravity_donut_block": SpriteImage_AntigravDonutBlock,
     "zap:string_bank": SpriteImage_StringBank,
 }

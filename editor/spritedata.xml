@@ -231,9 +231,6 @@
 		<value nybble="21-22" title="Movement ID" id_type="movement" category="movement"/>
 	</sprite>
 	
-	<sprite string_id="zap:antigravity_donut_block" name="Antigravity Donut Block">
-	</sprite>
-	
 	<sprite string_id="zap:donut_block" name="Donut Block" notes="An actor version of the donut block.">
 		<list nybble="5" title="Width" category="behavior">
 			<entry value="0">1 Tile</entry>
