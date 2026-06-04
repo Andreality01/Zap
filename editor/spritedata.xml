@@ -261,4 +261,35 @@
 		</layer>
 		<initialstate title="Bank ID" type="value" category="behavior" id_type="string_bank"/>
 	</sprite>
+	
+	<sprite string_id="zap:actor_spawner_simple" name="Actor Spawner (Simple)">
+        <initialstate title="Triggering Event ID" category="events" id_type="event" type="value"/>
+		
+		<dualbox bit="1" title1="Single Use" title2="Multi Use" category="behavior"/>
+		<value nybble="22-24" title="ID" category="behavior"/>
+		<dualbox bit="2" title1="Sprite ID" title2="Profile ID" category="behavior"/>
+		
+        <value nybble="2" title="Child Nybble 2"/>
+        <value nybble="3" title="Child Nybble 3"/>
+		<value nybble="4" title="Child Nybble 4"/>
+        <value nybble="5" title="Child Nybble 5"/>
+        <value nybble="6" title="Child Nybble 6"/>
+        <value nybble="7" title="Child Nybble 7"/>
+        <value nybble="8" title="Child Nybble 8"/>
+        <value nybble="9" title="Child Nybble 9"/>
+        <value nybble="10" title="Child Nybble 10"/>
+        <value nybble="11" title="Child Nybble 11"/>
+        <value nybble="12" title="Child Nybble 12"/>
+        <value nybble="13" title="Child Nybble 13"/>
+        <value nybble="14" title="Child Nybble 14"/>
+        <value nybble="15" title="Child Nybble 15"/>
+        <value nybble="16" title="Child Nybble 16"/>
+        <value nybble="17" title="Child Nybble 17"/>
+        <value nybble="18" title="Child Nybble 18"/>
+        <value nybble="19" title="Child Nybble 19"/>
+        <value nybble="20" title="Child Nybble 20"/>
+		<value nybble="21" title="Child Nybble 21"/>
+		<layer mask="15" type="value" title="Child Nybble 22"/>
+		<layer mask="240" type="value" title="Child Nybble 23"/>
+	</sprite>
 </sprites>
