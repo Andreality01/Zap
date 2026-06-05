@@ -21,7 +21,20 @@ static constexpr sead::SafeArray<u32, 6> cTimes = {10, 1, 5, 30, 50, 100};
 // Register it
 Profile* zap::TimeClock::sProfile = zap::getRegistrar()->newProfile<zap::TimeClock>("timeclock")
     .resources<"timeclock">(ProfileInfo::cResType_Course)
+    .createInfo(&cCreateInfo)
     .build();
+
+const ActorCreateInfo zap::TimeClock::cCreateInfo = {
+    .offset_x = 8, .offset_y = -8,
+    .spawn_range = {
+        .offset_x = 0, .offset_y = 0,
+        .half_size_x = 8, .half_size_y = 8
+    },
+    .cull_range = { 
+        .up = 0, .down = 0, .left = 0, .right = 0
+    },
+    .flag = ActorCreateInfo::cFlag_MapObj
+};
 
 // Hitbox data
 using CC = ActorCollisionCheck;
@@ -32,17 +45,9 @@ const ActorCollisionCheck::CollisionData zap::TimeClock::cCollisionData = {
     .kind = CC::cKind_Item,
     .attack = CC::cAttack_None,
     .vs_kind = CC::TargetKind(
-        CC::cTargetKind_Player |
-        CC::cTargetKind_Item
+        CC::cTargetKind_Player
     ),
-    .vs_damage = CC::DamageFrom(
-        CC::cDamageFrom_Slip |
-        CC::cDamageFrom_HipAttack |
-        CC::cDamageFrom_Shell |
-        CC::cDamageFrom_PenguinSlip |
-        CC::cDamageFrom_Spin |
-        CC::cDamageFrom_SpinFall
-    ),
+    .vs_damage = CC::cDamageFrom_All,
     .status = CC::cStatus_None,
     .callback = [](ActorCollisionCheck* cc_self, ActorCollisionCheck* cc_other) {
         if (TimeClock* self = cc_self->getOwner<TimeClock>(); self != nullptr)
@@ -55,6 +60,11 @@ const ActorCollisionCheck::CollisionData zap::TimeClock::cCollisionData = {
 zap::TimeClock::TimeClock(const ActorCreateParam& param)
     : ActorState(param)
     , mModel(nullptr)
+    , mMovementHandler()
+    , mReactivationEvent(0)
+    , mCollectionEvent(0)
+    , mTime(0.0f)
+    , mCollectAnimProgress(0.0f)
 { }
 
 ActorBase::Result zap::TimeClock::create() {
@@ -66,10 +76,10 @@ ActorBase::Result zap::TimeClock::create() {
     mCollisionCheck.set(this, cCollisionData);
 
     // Time selection
-    mTimeDelta = cTimes[mParam0 & 0xFFF];
+    mTimeSelectionDelta = cTimes[mParam0 & 0xFFF];
     
     // small clock
-    if (mTimeDelta == 1) {
+    if (mTimeSelectionDelta == 1) {
         mCollisionCheck.setHalfSize(6.0f, 6.0f);
         mScale = {0.5f, 0.5f, 0.5f};
     }
@@ -95,15 +105,17 @@ ActorBase::Result zap::TimeClock::create() {
 bool zap::TimeClock::execute() {
     // Delete when offscreen
     screenOutCheck(0);
-    
-    mAngle.y() -= sead::Mathf::deg2idx(5.0f); // spin 5 degrees per frame
+
     updateModel();
+
+    executeState();
 
     return true;
 }
 
 bool zap::TimeClock::draw() {
-    mModel->draw();
+    if (!isState(StateID_Idle))
+        mModel->draw();
     return true;
 }
 
@@ -113,18 +125,18 @@ void zap::TimeClock::updateModel() const {
 
 void zap::TimeClock::collect() {
     if (isState(StateID_Active)) {
-        tk::println("Active and collecting!");
+        tk::println("timeclock::collect (active)");
         SwitchFlagMgr::instance()->set(mCollectionEvent, 0, true);
 
         removeCollisionCheck();
         
         changeState(StateID_Collecting);
     }
+    tk::println("timeclock::collect (inactive;skipped)");
     return;
-    tk::println("Notactive and notcollecting!");
 }
 
-/** STATE: Collecting */
+/** STATE: Active */
 void zap::TimeClock::initializeState_Active() { 
     tk::println(":3 Active!");
     reviveCollisionCheck();
@@ -147,16 +159,18 @@ void zap::TimeClock::initializeState_Collecting() {
     
     if (useBonusAnim) {
         tk::println("Using bonus anim");
-        CourseTimer::instance()->setBonusTime(mTimeDelta);
+        CourseTimer::instance()->setBonusTime(mTimeSelectionDelta);
         CourseTask::instance()->doBonusTime(0); // TODO: Set player ID properly
     } else {
         // add the time
-        CourseTimer::instance()->addTimeLimitSeconds(mTimeDelta);
+        CourseTimer::instance()->addTimeLimitSeconds(mTimeSelectionDelta);
     }
-    tk::println("HERE");
+
+    tk::println("herejiggler");
 
     bool useCollectAnim = red::SpriteUtil::getNybble2(this);
     if (!useCollectAnim) { // Don't use collect animation
+        tk::println("herejiggler");
         tk::println("Skipping collect animation");
         // spawn puff effect in place (no following)
         const sead::Vector3f effectPos = mPos + sead::Vector3f(0.0f, -12.0f, 0.0f);
@@ -165,24 +179,25 @@ void zap::TimeClock::initializeState_Collecting() {
         // switch directly to the collected state (model doesnt need to change at all)
         changeState(StateID_Idle);
     } // use collect animation: continue to collecting state execute; plays anim
+    tk::println("herejiggler");
 }
 
 void zap::TimeClock::executeState_Collecting() { 
-    tk::println("Collecting");
+    tk::println("timeclock::executeState_Collecting");
     if (mCollectAnimProgress >= sead::Mathf::pi()) { 
         changeState(StateID_Idle);
     }
     
-    f32 yOffset;
-
+    f32 prevSin = sead::Mathf::sin(mCollectAnimProgress);
     mCollectAnimProgress += 1.0f / cCollectAnimDuration;
-    yOffset = sead::Mathf::sin(mCollectAnimProgress) * (cCollectAnimTiles * 16.0f);
+    f32 yOffset = (sead::Mathf::sin(mCollectAnimProgress) - prevSin) * (cCollectAnimTiles * 16.0f);
 
     mPos.y += yOffset;
 
     mAngle.y() += sead::Mathf::deg2idx(30.0f);
 
     mCollectEffect.createEffect(RP_FlagPass_1, &mPos, nullptr);
+    tk::println("herejiggler");
 }
 
 void zap::TimeClock::finalizeState_Collecting() { }

@@ -1,6 +1,7 @@
 #pragma once
 
 #include <actor/ActorState.h>
+#include <actor/Profile.h>
 #include <graphics/AnimModel.h>
 #include <effect/EffectObj.h>
 #include <map_obj/ParentMovementMgr.h>
@@ -23,6 +24,7 @@ public:
     void updateModel() const;
     void collect();
     
+    static const ActorCreateInfo cCreateInfo;
     static const ActorCollisionCheck::CollisionData cCollisionData;
     
 private:
@@ -37,7 +39,7 @@ private:
 
     EffectObj mCollectEffect;
 
-    u16 mTimeDelta;
+    u16 mTimeSelectionDelta;
 
     DECLARE_STATE_ID(TimeClock, Active)
     DECLARE_STATE_ID(TimeClock, Idle)
