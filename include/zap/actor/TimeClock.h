@@ -1,12 +1,14 @@
 #pragma once
 
-#include <actor/Actor.h>
+#include <actor/ActorState.h>
 #include <graphics/AnimModel.h>
+#include <effect/EffectObj.h>
+#include <map_obj/ParentMovementMgr.h>
 
 namespace zap {
 
-class TimeClock : public Actor {
-    SEAD_RTTI_OVERRIDE(TimeClock, Actor)
+class TimeClock : public ActorState {
+    SEAD_RTTI_OVERRIDE(TimeClock, ActorState)
 
 public:
     static Profile* sProfile;
@@ -25,6 +27,21 @@ public:
     
 private:
     AnimModel* mModel;
+    ParentMovementMgr mMovementHandler;
+
+    u32 mReactivationEvent;
+    u32 mCollectionEvent;
+
+    f32 mTime; // maybe use for turning anim?
+    f32 mCollectAnimProgress;
+
+    EffectObj mCollectEffect;
+
+    u16 mTimeDelta;
+
+    DECLARE_STATE_ID(TimeClock, Active)
+    DECLARE_STATE_ID(TimeClock, Idle)
+    DECLARE_STATE_ID(TimeClock, Collecting)
 };
 
 } // namespace zap
