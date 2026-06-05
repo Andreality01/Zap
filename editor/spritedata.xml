@@ -4,7 +4,35 @@
 	</sprite>
 	
 	<sprite string_id="zap:timeclock" name="Time Clock">
-		<value nybble="10-12" title="Time Amount" category="behavior"/>
+		<checkbox nybble="1" title="Use bonus time animation" category="behavior"/>
+		<checkbox nybble="2" title="Use collect animation" category="behavior"/>
+		
+		<value nybble="5-6" title="Triggering event ID (re-activation)" category="events"/>
+		<value nybble="7-8" title="Target event ID (collection)" category="events"/>
+
+		<list nybble="10-12" title="Time Amount" category="behavior">
+			<entry value="1">1 seconds</entry>
+			<entry value="2">5 seconds</entry>
+			<entry value="0">10 second</entry>
+			<entry value="3">30 seconds</entry>
+			<entry value="4">50 seconds</entry>
+			<entry value="5">100 seconds</entry>
+		</list>
+
+		<list nybble="20" title="Movement Type" category="movement">
+			<entry value="0">None</entry>
+			<entry value="1">Sway Or Spin (68, 69, 116, 118)</entry>
+			<entry value="2">Bolt (238)</entry>
+			<entry value="3">Path (100)</entry>
+			<entry value="4">Two-Way (70)</entry>
+			<entry value="6">BoltMushroom (241)</entry>
+			<entry value="7">No-bolt Mushroom (242)</entry>
+			<entry value="8">Shifting Platform (132)</entry>
+			<entry value="9">Spinning (214, 484)</entry>
+			<entry value="10">Rolling Hill (265)</entry>
+			<entry value="11">Moving Mushroom Lift (210)</entry>
+		</list>
+        <value nybble="21-22" title="Movement ID" category="movement"/>
 	</sprite>
 	
 	<sprite string_id="zap:angrygrrrol" name="Angry Grrrol">
@@ -48,8 +76,8 @@
 	</sprite>
 
 	<sprite string_id="zap:note" name="Music Note" notes="A note for the clef challenge.">
-        <value nybble="1-2" title="Manager ID" id_type="clef" category="behavior"/>
-        <list nybble="3" title="Note Sound" category="behavior">
+        <value nybble="1-2" title="Manager ID" category="behavior"/>
+        <!-- <list nybble="3" title="Note Sound">
             <entry value="0">First C</entry>
             <entry value="1">D</entry>
             <entry value="2">E</entry>
@@ -58,7 +86,7 @@
             <entry value="5">A</entry>
             <entry value="6">B</entry>
             <entry value="7">Second C</entry>
-        </list>
+        </list> -->
         <list nybble="20" title="Movement Type" category="movement">
 			<entry value="0">None</entry>
 			<entry value="1">Sway Or Spin (68, 69, 116, 118)</entry>
@@ -72,27 +100,26 @@
 			<entry value="10">Rolling Hill (265)</entry>
 			<entry value="11">Moving Mushroom Lift (210)</entry>
 		</list>
-        <value nybble="21-22" title="Movement ID" id_type="movement" category="movement"/>
+        <value nybble="21-22" title="Movement ID" category="movement"/>
     </sprite>
 
 	<sprite string_id="zap:clef" name="Clef" notes="A clef that spawns multiple music notes when collected. Collect them all within the time limit for an item!">
-        <value nybble="1-2" title="Manager ID" id_type="clef" category="behavior"/>
+        <value nybble="1-2" title="Manager ID" category="behavior"/>
         <value nybble="3-4" title="Target Note Count" comment="The required number of notes with a matching ID to activate an event." category="behavior"/>
-        <list nybble="5" title="Powerup" comment="The powerup reward once all notes are collected." category="behavior">
-            <entry value="0">Mushroom</entry>
-            <entry value="1">Fire Flower</entry>
-            <entry value="2">Ice Flower</entry>
-            <entry value="3">Mini Mushroom</entry>
-            <entry value="4">Propeller Mushroom</entry>
-            <entry value="5">Penguin</entry>
-            <entry value="6">Acorn</entry>
-            <entry value="7">1-up Mushroom</entry>
-            <entry value="8">3-up Moon</entry>
-            <entry value="9">1st star coin</entry>
-            <entry value="10">2nd star coin</entry>
-            <entry value="11">3rd star coin</entry>
+        <list nybble="5" title="Reward" comment="The reward once all notes are collected." category="behavior">
+            <entry value="0" comment="Useful for event activation">None</entry>
+			<entry value="1">Mushroom</entry>
+            <entry value="2">Fire Flower</entry>
+            <entry value="3">Ice Flower</entry>
+            <entry value="4">Mini Mushroom</entry>
+            <entry value="5">Propeller Mushroom</entry>
+            <entry value="6">Penguin</entry>
+            <entry value="7">Acorn</entry>
+            <entry value="8">1-up Mushroom</entry>
+            <entry value="9">3-up Moon</entry>
         </list>
-        <value nybble="6-7" title="Time Limit" comment="In seconds." category="behavior"/>
+        <value nybble="6-7" title="Time Limit" comment="In real seconds." category="behavior"/>
+		
         <list nybble="20" title="Movement Type" category="movement">
 			<entry value="0">None</entry>
 			<entry value="1">Sway Or Spin (68, 69, 116, 118)</entry>
@@ -106,7 +133,10 @@
 			<entry value="10">Rolling Hill (265)</entry>
 			<entry value="11">Moving Mushroom Lift (210)</entry>
 		</list>
-        <value nybble="21-22" title="Movement ID" id_type="movement" category="movement"/>
+        <value nybble="21-22" title="Movement ID" category="movement"/>
+
+		<value nybble="8-9" title="Target Event ID (challenge start)" comment="Event activated when the Clef is collected." category="events"/>
+		<value nybble="10-11" title="Target Event ID (challenge won)" comment="Event activated when all Notes are collected." category="events"/>
     </sprite>
 
 	<sprite string_id="zap:jumboray" name="Jumbo Ray">
