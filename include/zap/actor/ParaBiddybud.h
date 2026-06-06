@@ -9,14 +9,14 @@
 
 namespace zap {
 
-class Biddybud : public Enemy {
-    SEAD_RTTI_OVERRIDE(Biddybud, Enemy)
+class ParaBiddybud : public Enemy {
+    SEAD_RTTI_OVERRIDE(ParaBiddybud, Enemy)
 
 public:
     static Profile* sProfile;
 
-    Biddybud(const ActorCreateParam& param);
-    ~Biddybud() override = default;
+    ParaBiddybud(const ActorCreateParam& param);
+    ~ParaBiddybud() override = default;
 
     Result create() override;
     bool execute() override;
@@ -31,9 +31,9 @@ public:
     static const ActorCreateInfo cCreateInfo;
     static const ActorCollisionCheck::CollisionData cCollisionData;
 
-    DECLARE_STATE_ID(Biddybud, Idle)
+    DECLARE_STATE_ID(ParaBiddybud, Idle)
 
-    DECLARE_STATE_VIRTUAL_ID_OVERRIDE(Biddybud, DieOther)
+    DECLARE_STATE_VIRTUAL_ID_OVERRIDE(ParaBiddybud, DieOther)
 
 private:
     JointBlendModel* mModel;

@@ -1,19 +1,19 @@
-#include <zap/actor/Biddybud.h>
+#include <zap/actor/ParaBiddybud.h>
 #include <zap/Zap.h>
 #include <red/util/SpriteUtil.h>
 #include <effect/EffectCreateUtil.h>
 
-SEAD_RTTI_OVERRIDE_IMPL(zap::Biddybud, Enemy)
+SEAD_RTTI_OVERRIDE_IMPL(zap::ParaBiddybud, Enemy)
 
-CREATE_STATE_ID(zap::Biddybud, Idle)
+CREATE_STATE_ID(zap::ParaBiddybud, Idle)
 
-CREATE_STATE_VIRTUAL_ID_OVERRIDE(zap::Biddybud, Enemy, DieOther)
+CREATE_STATE_VIRTUAL_ID_OVERRIDE(zap::ParaBiddybud, Enemy, DieOther)
 
 // Configuration
 static constexpr f32 cScaleFactor = 0.17f; // 3DW models are large
 static constexpr f32 cInvScaleFactor = 1.0f / cScaleFactor;
 
-const ActorCreateInfo zap::Biddybud::cCreateInfo = {
+const ActorCreateInfo zap::ParaBiddybud::cCreateInfo = {
     .offset_x = 8, .offset_y = -8,
     .spawn_range = {
         .offset_x = 0, .offset_y = 0,
@@ -26,7 +26,7 @@ const ActorCreateInfo zap::Biddybud::cCreateInfo = {
 };
 
 using CC = ActorCollisionCheck;
-const CC::CollisionData zap::Biddybud::cCollisionData = {
+const CC::CollisionData zap::ParaBiddybud::cCollisionData = {
     .center_offset = { 0.0f, 0.0f },
     .half_size = { 8.0f, 8.0f },
     .shape_type = CC::ActorCollisionCheck::cShapeType_Box,
@@ -46,19 +46,19 @@ const CC::CollisionData zap::Biddybud::cCollisionData = {
     .callback = &Enemy::normal_collcheck
 };
 
-Profile* zap::Biddybud::sProfile = zap::getRegistrar()->newProfile<zap::Biddybud>("biddybud")
+Profile* zap::ParaBiddybud::sProfile = zap::getRegistrar()->newProfile<zap::ParaBiddybud>("para_biddybud")
     .resources<"tenten_w">(ProfileInfo::cResType_Course)
     .createInfo(&cCreateInfo)
     .build();
 
-zap::Biddybud::Biddybud(const ActorCreateParam& param)
+zap::ParaBiddybud::ParaBiddybud(const ActorCreateParam& param)
     : Enemy(param)
     , mModel(nullptr)
     , mYoshiEatData(mActorUniqueID)
     , mChibiYoshiEatData(mActorUniqueID)
 { }
 
-ActorBase::Result zap::Biddybud::create() {
+ActorBase::Result zap::ParaBiddybud::create() {
     // Model setup
     mScale = sead::Vector3f(cScaleFactor, cScaleFactor, cScaleFactor);
     mModel = JointBlendModel::create("tenten_w", "tenten_w", 3, 1, 1);
@@ -77,7 +77,7 @@ ActorBase::Result zap::Biddybud::create() {
     // Movement setup
     const u8 nybble20 = red::SpriteUtil::getNybble20(this);
     if (nybble20 > cPos_KinokoLift) {
-        tk::fatal("Biddybud movement type was out of bounds");
+        tk::fatal("ParaBiddybud movement type was out of bounds");
     }
     const ParentMovementType movementType = static_cast<ParentMovementType>(nybble20);
     const u32 movementMask = mMovementHandler.getTypeMask(movementType);
@@ -98,7 +98,7 @@ ActorBase::Result zap::Biddybud::create() {
     return cResult_Success;
 }
 
-bool zap::Biddybud::execute() {
+bool zap::ParaBiddybud::execute() {
     // Movement
     if (isState(StateID_Idle)) {
         mMovementHandler.execute();
@@ -118,16 +118,16 @@ bool zap::Biddybud::execute() {
     return true; 
 }
 
-bool zap::Biddybud::draw() {
+bool zap::ParaBiddybud::draw() {
     mModel->draw();
     return true;
 }
 
-void zap::Biddybud::calcMdl_Base() {
+void zap::ParaBiddybud::calcMdl_Base() {
     mModel->update(mPos + sead::Vector3f(0.0f, -8.0f, 0.0f), mAngle, mScale, !isState(StateID_Ice));
 }
 
-bool zap::Biddybud::createIceActor() {
+bool zap::ParaBiddybud::createIceActor() {
     IceInfo info = { 
         IceInfo::makeParam(cIceType_Square),
         { mPos.x, mPos.y - 8.0f, mPos.z },
@@ -137,7 +137,7 @@ bool zap::Biddybud::createIceActor() {
     return mIceMgr.createIce(info);
 }
 
-void zap::Biddybud::vsPlayerHitCheck_Normal(ActorCollisionCheck* cc_self, ActorCollisionCheck* cc_other) {
+void zap::ParaBiddybud::vsPlayerHitCheck_Normal(ActorCollisionCheck* cc_self, ActorCollisionCheck* cc_other) {
     Actor* other = cc_other->getOwner();
     
     switch (fumiCheck(cc_self, cc_other, cFumiSeType_Normal)) {
@@ -159,7 +159,7 @@ void zap::Biddybud::vsPlayerHitCheck_Normal(ActorCollisionCheck* cc_self, ActorC
     }
 }
 
-void zap::Biddybud::vsYoshiHitCheck_Normal(ActorCollisionCheck* cc_self, ActorCollisionCheck* cc_other) {
+void zap::ParaBiddybud::vsYoshiHitCheck_Normal(ActorCollisionCheck* cc_self, ActorCollisionCheck* cc_other) {
     Actor* other = cc_other->getOwner();
     
     switch (fumiCheck(cc_self, cc_other, cFumiSeType_Normal)) {
@@ -175,24 +175,24 @@ void zap::Biddybud::vsYoshiHitCheck_Normal(ActorCollisionCheck* cc_self, ActorCo
 
 /** STATE: Idle */
 
-void zap::Biddybud::initializeState_Idle() {
+void zap::ParaBiddybud::initializeState_Idle() {
     
 }
 
-void zap::Biddybud::executeState_Idle() {
+void zap::ParaBiddybud::executeState_Idle() {
     
 }
 
-void zap::Biddybud::finalizeState_Idle() { }
+void zap::ParaBiddybud::finalizeState_Idle() { }
 
 /** STATE: DieOther */
 
-void zap::Biddybud::initializeState_DieOther() {
+void zap::ParaBiddybud::initializeState_DieOther() {
     mModel->setAnm("BlowDown", 0.0f, FrameCtrl::cMode_NoRepeat);
     removeCollisionCheck();
 }
 
-void zap::Biddybud::executeState_DieOther() {
+void zap::ParaBiddybud::executeState_DieOther() {
     // Wait for squish to finish before deleting
     if (mModel->getCurSklAnim()->getFrameCtrl().isStop()) {
         deleteRequest();
@@ -204,4 +204,4 @@ void zap::Biddybud::executeState_DieOther() {
     }
 }
 
-void zap::Biddybud::finalizeState_DieOther() { }
+void zap::ParaBiddybud::finalizeState_DieOther() { }

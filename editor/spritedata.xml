@@ -51,7 +51,7 @@
 	    <value nybble="7-8" title="Launch height (Y Speed)" category="behavior" comment="In tenths of a non-linear speed unit.&lt;br&gt; &lt;b&gt;Reference values:&lt;/b&gt; &lt;br&gt; 35 = 3.5 -> ~4 tiles (~7 as mini) &lt;br&gt; 45 = 4.5 -> ~8 tiles (~14 as mini) &lt;br&gt; 55 = 5.5 -> ~13 tiles (~21 as mini) &lt;br&gt; 60 = 6.0 -> ~16 tiles (~26 as mini) &lt;br&gt; 72 = 7.2 -> ~24 tiles (~39 as mini) &lt;br&gt; 82 = 8.2 -> ~32 tiles (~50 as mini) &lt;br&gt; 99 = 9.9 -> ~48 tiles (~72 as mini) &lt;br&gt; 119 = 11.9 -> ~64 tiles (~92 as mini) &lt;br&gt; 221 = 22.1 -> ~128 tiles (~188 as mini) &lt;br&gt; 255 = 25.5 -> ~149 tiles (~200+ as mini)"/>
 	</sprite>
 
-	<sprite string_id="zap:biddybud" name="Biddybud">
+	<sprite string_id="zap:parabiddybud" name="Para-Biddybud">
 		<list nybble="5" title="Color" category="behavior">
             <entry value="0">Red</entry>
             <entry value="1">Yellow</entry>

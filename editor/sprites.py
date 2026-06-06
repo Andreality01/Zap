@@ -21,18 +21,18 @@ class SpriteImage_Cataquack(SLib.SpriteImage_Static):
     def loadImages():
         SLib.loadIfNotInImageCache('Cataquack', 'cataquack.png')
 
-class SpriteImage_Biddybud(SLib.SpriteImage_Static):
+class SpriteImage_ParaBiddybud(SLib.SpriteImage_Static):
     def __init__(self, parent):
         super().__init__(
             parent,
             4.0,
-            ImageCache['Biddybud'],
+            ImageCache['ParaBiddybudRed'],
             (0, 0),
         )
 
     @staticmethod
     def loadImages():
-        SLib.loadIfNotInImageCache('Biddybud', 'biddybud_red.png')
+        SLib.loadIfNotInImageCache('ParaBiddybudRed', 'para_biddybud_red.png')
 
 class SpriteImage_Flaptor(SLib.SpriteImage_Static):
     def __init__(self, parent):
@@ -172,7 +172,7 @@ class SpriteImage_StringBank(SLib.SpriteImage_Static):
 
 ImageClasses = {
     "zap:cataquack": SpriteImage_Cataquack,
-    "zap:biddybud": SpriteImage_Biddybud,
+    "zap:biddybud": SpriteImage_ParaBiddybud,
     "zap:flaptor": SpriteImage_Flaptor,
     "zap:stingby": SpriteImage_Stingby,
     "zap:flybones": SpriteImage_FlyBones,
