@@ -19,6 +19,10 @@
 			<entry value="5">100 seconds</entry>
 		</list>
 
+		<checkbox nybble="9" title="Disable sound effects" category="behavior"/>
+		<checkbox nybble="13" title="Subtract time" comment="Bad clock" category="behavior"/>
+		<checkbox nybble="14" title="Small clock" category="behavior"/>
+
 		<list nybble="20" title="Movement Type" category="movement">
 			<entry value="0">None</entry>
 			<entry value="1">Sway Or Spin (68, 69, 116, 118)</entry>

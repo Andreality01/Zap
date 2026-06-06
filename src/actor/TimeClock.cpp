@@ -63,26 +63,52 @@ zap::TimeClock::TimeClock(const ActorCreateParam& param)
     , mMovementHandler()
     , mReactivationEvent(0)
     , mCollectionEvent(0)
-    , mTime(0.0f)
+    , mActorAliveTime(0.0f)
     , mCollectAnimProgress(0.0f)
+    , mBadClock(false)
+    , mSmallClock(false)
+    , mGreenTex(false)
+    , mDisableSfx(false)
 { }
 
 ActorBase::Result zap::TimeClock::create() {
     // Model
-    mModel = AnimModel::create("timeclock", "timeclockA"); // if (mTimeDelta < 30) blue;
-    updateModel(); // make sure it appears on the first frame
-
+    mModel = AnimModel::create("timeclock", "timeclockA", 0, 1);
+    
     // Hitbox
     mCollisionCheck.set(this, cCollisionData);
-
+    
     // Time selection
     mTimeSelectionDelta = cTimes[mParam0 & 0xFFF];
     
     // small clock
-    if (mTimeSelectionDelta == 1) {
+
+    mSmallClock = red::SpriteUtil::getNybble14(this);
+
+    if (mSmallClock) {
         mCollisionCheck.setHalfSize(6.0f, 6.0f);
         mScale = {0.5f, 0.5f, 0.5f};
     }
+    
+    // bad clock
+    mBadClock = red::SpriteUtil::getNybble13(this);
+    
+    
+    // set color
+    mGreenTex = (mTimeSelectionDelta >= 30 && !mBadClock);
+    
+    // green 0, blue 1, red 2
+    u32 tex = mBadClock ? 2 : (mGreenTex ? 0 : 1); 
+
+    // texture anim for colors
+    mModel->playTexAnim("tex");
+    mModel->getTexAnim(0)->getFrameCtrl().setFrame(tex);
+    // pause it 
+    mModel->getTexAnim(0)->getFrameCtrl().setRate(0.0f);
+
+
+    // disable sfx
+    mDisableSfx = red::SpriteUtil::getNybble9(this);
     
     // Movement setup
     const u8 nybble20 = red::SpriteUtil::getNybble20(this);
@@ -92,12 +118,14 @@ ActorBase::Result zap::TimeClock::create() {
     const ParentMovementType movementType = static_cast<ParentMovementType>(nybble20);
     u32 movementMask = mMovementHandler.getTypeMask(movementType);
     mMovementHandler.link(mPos, movementMask, mParamEx.course.movement_id); // nybble 21-22
-
+    
     // Event IDs
     mReactivationEvent = (red::SpriteUtil::getNybble5(this) << 4) | red::SpriteUtil::getNybble6(this);
     mCollectionEvent = (red::SpriteUtil::getNybble7(this) << 4) | red::SpriteUtil::getNybble8(this);
-
+    
     changeState(StateID_Active);
+
+    updateModel(); // make sure it appears on the first frame
 
     return cResult_Success;
 }
@@ -143,7 +171,20 @@ void zap::TimeClock::initializeState_Active() {
 }
 
 void zap::TimeClock::executeState_Active() { 
-    mAngle.y() -= sead::Mathf::deg2idx(5.0f); // spin 5 degrees per frame
+    mAngle.y() += sead::Mathf::deg2idx(mBadClock ? -5.0f : 5.0f); // spin 5 degrees per frame
+
+    sead::Vector3f scale = sead::Vector3f(0.7f, 0.7f, 0.7f);
+    sead::Vector3f scaleSmall = sead::Vector3f(0.4f, 0.4f, 0.4f);
+
+    EffectID effect = (mBadClock || !mGreenTex) ? RP_RingRed : RP_RingGreen;
+    
+    mEffect.createEffect(effect, &mPos, nullptr, mSmallClock ? &scaleSmall : &scale);
+    
+    if (!mBadClock && !mGreenTex) // blue clock needs color change since there's no blue ring effect
+        mEffect.setColor({ 0.0f, 1.0f, 6.0f, 1.0f });
+
+    // Remove the ring glow from the coin ring effect emitter so it just uses the sparkles
+    mEffect.getEmitterSet_()->GetEmitterController(2)->SetVisible(false);
 }
 
 void zap::TimeClock::finalizeState_Active() { }
@@ -153,33 +194,39 @@ void zap::TimeClock::initializeState_Collecting() {
     tk::println(":3 Collecting");
 
     // Sound
-    GameAudio::getAudioObjMap()->startSound("SE_SYS_CONTINUE_DONE", mPos);
+    if (!mDisableSfx) {
+        if (mBadClock) {
+            GameAudio::getAudioObjMap()->startSound("SE_MG_CM_PANEL_NG", mPos);
+        } else {
+            if (mSmallClock) {
+                GameAudio::getAudioObjMap()->startSound("SE_MG_CM_PANEL_OK", mPos);
+            } else {
+                GameAudio::getAudioObjMap()->startSound("SE_BOSS_CMN_GET_COIN_BONUS", mPos);
+            }
+        }
+    }
 
     bool useBonusAnim = red::SpriteUtil::getNybble1(this);
-    
+
+    s16 time = mBadClock ? -mTimeSelectionDelta : mTimeSelectionDelta;
     if (useBonusAnim) {
-        tk::println("Using bonus anim");
-        CourseTimer::instance()->setBonusTime(mTimeSelectionDelta);
+        CourseTimer::instance()->setBonusTime(time);
         CourseTask::instance()->doBonusTime(0); // TODO: Set player ID properly
     } else {
         // add the time
-        CourseTimer::instance()->addTimeLimitSeconds(mTimeSelectionDelta);
+        CourseTimer::instance()->addTimeLimitSeconds(time);
     }
-
-    tk::println("herejiggler");
+    
+    // smallclock scale
+    sead::Vector3f effectScale = sead::Vector3f(1.8f, 1.8f, 1.8f);
+    EffectID collectEffect = mBadClock ? RP_CoinRedGet : (mGreenTex ? RP_CoinGreenGet : RP_CoinBlueGet);
+    EffectCreateUtil::createEffect(collectEffect, &mPos, nullptr, mSmallClock ? nullptr : &effectScale); // dont enlarge the scale for small clock
 
     bool useCollectAnim = red::SpriteUtil::getNybble2(this);
-    if (!useCollectAnim) { // Don't use collect animation
-        tk::println("herejiggler");
-        tk::println("Skipping collect animation");
-        // spawn puff effect in place (no following)
-        const sead::Vector3f effectPos = mPos + sead::Vector3f(0.0f, -12.0f, 0.0f);
-        EffectCreateUtil::createEffect(RP_FlagPass_1, &effectPos);
-
+    if (!useCollectAnim || mBadClock) { // Don't use collect animation
         // switch directly to the collected state (model doesnt need to change at all)
         changeState(StateID_Idle);
     } // use collect animation: continue to collecting state execute; plays anim
-    tk::println("herejiggler");
 }
 
 void zap::TimeClock::executeState_Collecting() { 
@@ -194,10 +241,10 @@ void zap::TimeClock::executeState_Collecting() {
 
     mPos.y += yOffset;
 
-    mAngle.y() += sead::Mathf::deg2idx(30.0f);
+    mAngle.y() += sead::Mathf::deg2idx(mBadClock ? -30.0f : 30.0f);
 
-    mCollectEffect.createEffect(RP_FlagPass_1, &mPos, nullptr);
-    tk::println("herejiggler");
+    // effects that run as collect anim plays
+    mEffect.createEffect(RP_FlagPass_1, &mPos, nullptr);
 }
 
 void zap::TimeClock::finalizeState_Collecting() { }
@@ -218,23 +265,12 @@ void zap::TimeClock::finalizeState_Idle() { }
 
 
 /** TODO
- * Nybble for "time addition animation" ✅
  * Movement controller 🔄 test
  * Event activation (SwitchFlagMgr) 🔄 test
- * Collect anim ✅
- * Nybble for "collect animation" ✅
- * NSLU time add fix ✅ ty lumi
- * Small clock 
  * Respawning (based on event activation) ❗️ figure this out lol 
- * Negative time / bad clock
- * spin model faster or slower based on time (or add this to a fake timeclock)
+ * spin model faster or slower based on time
  * Add an alternative "simple" animation, similar to points text ui or maybe sparkles at the timer ui
+ * Badclock no collect animation allowed in spritedata
+ * Fake timeclock: RP_ObakeDoor_Disapp or RP_Poltergeist_Disapp, SFX: SE_EMY_FIRE_SNAKE_EXTINCT or boo laugh, how does it look?
+ * global spin sync
  */
-
-
-/**
- 1. Time dropdown 1, 5, 10, 30, 50, 100 ✅
- 2. 50+ uses green 🔄 waiting on mdl
- 3. small cock ✅ check offset tho:
- 4. Negative time (bad clock?) -> "subtract time" option
-*/

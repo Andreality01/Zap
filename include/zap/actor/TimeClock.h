@@ -34,12 +34,18 @@ private:
     u32 mReactivationEvent;
     u32 mCollectionEvent;
 
-    f32 mTime; // maybe use for turning anim?
+    f32 mActorAliveTime;
     f32 mCollectAnimProgress;
 
-    EffectObj mCollectEffect;
+    bool mBadClock;
+    bool mSmallClock;
+    bool mGreenTex;
 
-    u16 mTimeSelectionDelta;
+    bool mDisableSfx;
+
+    EffectObj mEffect;
+
+    s16 mTimeSelectionDelta;
 
     DECLARE_STATE_ID(TimeClock, Active)
     DECLARE_STATE_ID(TimeClock, Idle)
