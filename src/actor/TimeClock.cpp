@@ -6,6 +6,7 @@
 #include <red/util/SpriteUtil.h>
 #include <map/SwitchFlagMgr.h>
 #include <game/CourseTask.h>
+#include <map/CoinOrigin.h>
 
 SEAD_RTTI_OVERRIDE_IMPL(zap::TimeClock, ActorState);
 
@@ -168,10 +169,12 @@ void zap::TimeClock::collect() {
 void zap::TimeClock::initializeState_Active() { 
     tk::println(":3 Active!");
     reviveCollisionCheck();
+    mAngle.y() = CoinOrigin::instance()->getCoinAngle() * (mBadClock ? -0.5f : 0.5f);
 }
 
-void zap::TimeClock::executeState_Active() { 
-    mAngle.y() += sead::Mathf::deg2idx(mBadClock ? -5.0f : 5.0f); // spin 5 degrees per frame
+void zap::TimeClock::executeState_Active() {
+    //* this can only be speed 0.5 or 1.0 because the angle wraps around, so it will teleport if it's not a full rotation (or faking it with half)
+    mAngle.y() = CoinOrigin::instance()->getCoinAngle() * (mBadClock ? -0.5f : 0.5f);
 
     sead::Vector3f scale = sead::Vector3f(0.7f, 0.7f, 0.7f);
     sead::Vector3f scaleSmall = sead::Vector3f(0.4f, 0.4f, 0.4f);
