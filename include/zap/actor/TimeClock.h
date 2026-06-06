@@ -22,7 +22,7 @@ public:
     bool draw() override; 
 
     void updateModel() const;
-    void collect();
+    void collect(s8 player);
     
     static const ActorCreateInfo cCreateInfo;
     static const ActorCollisionCheck::CollisionData cCollisionData;

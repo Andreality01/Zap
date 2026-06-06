@@ -52,7 +52,7 @@ const ActorCollisionCheck::CollisionData zap::TimeClock::cCollisionData = {
     .status = CC::cStatus_None,
     .callback = [](ActorCollisionCheck* cc_self, ActorCollisionCheck* cc_other) {
         if (TimeClock* self = cc_self->getOwner<TimeClock>(); self != nullptr)
-            self->collect();
+            self->collect(cc_other->getOwner()->getPlayerNo());
     }
 };
 
@@ -152,13 +152,13 @@ void zap::TimeClock::updateModel() const {
     mModel->update(mPos, mAngle, mScale);
 }
 
-void zap::TimeClock::collect() {
+void zap::TimeClock::collect(s8 player) {
     if (isState(StateID_Active)) {
         tk::println("timeclock::collect (active)");
         SwitchFlagMgr::instance()->set(mCollectionEvent, 0, true);
 
         removeCollisionCheck();
-        
+        setPlayerNo(player);
         changeState(StateID_Collecting);
     }
     tk::println("timeclock::collect (inactive;skipped)");
@@ -214,7 +214,7 @@ void zap::TimeClock::initializeState_Collecting() {
     s16 time = mBadClock ? -mTimeSelectionDelta : mTimeSelectionDelta;
     if (useBonusAnim) {
         CourseTimer::instance()->setBonusTime(time);
-        CourseTask::instance()->doBonusTime(0); // TODO: Set player ID properly
+        CourseTask::instance()->doBonusTime(mPlayerNo);
     } else {
         // add the time
         CourseTimer::instance()->addTimeLimitSeconds(time);
