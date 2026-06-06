@@ -184,7 +184,7 @@ void zap::TimeClock::executeState_Active() {
         mEffect.setColor({ 0.0f, 1.0f, 6.0f, 1.0f });
 
     // Remove the ring glow from the coin ring effect emitter so it just uses the sparkles
-    mEffect.getEmitterSet_()->GetEmitterController(2)->SetVisible(false);
+    mEffect.setVisible(false, 2);
 }
 
 void zap::TimeClock::finalizeState_Active() { }
