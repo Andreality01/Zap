@@ -48,7 +48,6 @@ private:
     s16 mTimeSelectionDelta;
 
     DECLARE_STATE_ID(TimeClock, Active)
-    DECLARE_STATE_ID(TimeClock, Idle)
     DECLARE_STATE_ID(TimeClock, Collecting)
 };
 

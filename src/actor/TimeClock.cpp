@@ -12,7 +12,6 @@ SEAD_RTTI_OVERRIDE_IMPL(zap::TimeClock, ActorState);
 
 CREATE_STATE_ID(zap::TimeClock, Active)
 CREATE_STATE_ID(zap::TimeClock, Collecting)
-CREATE_STATE_ID(zap::TimeClock, Idle)
 
 static constexpr f32 cCollectAnimDuration = 9.0f; // frames
 static constexpr f32 cCollectAnimTiles = 1.5f;
@@ -143,8 +142,7 @@ bool zap::TimeClock::execute() {
 }
 
 bool zap::TimeClock::draw() {
-    if (!isState(StateID_Idle))
-        mModel->draw();
+    mModel->draw();
     return true;
 }
 
@@ -227,15 +225,14 @@ void zap::TimeClock::initializeState_Collecting() {
 
     bool useCollectAnim = red::SpriteUtil::getNybble2(this);
     if (!useCollectAnim || mBadClock) { // Don't use collect animation
-        // switch directly to the collected state (model doesnt need to change at all)
-        changeState(StateID_Idle);
+        deleteActor(true);
     } // use collect animation: continue to collecting state execute; plays anim
 }
 
 void zap::TimeClock::executeState_Collecting() { 
     tk::println("timeclock::executeState_Collecting");
     if (mCollectAnimProgress >= sead::Mathf::pi()) { 
-        changeState(StateID_Idle);
+        deleteActor(true);
     }
     
     f32 prevSin = sead::Mathf::sin(mCollectAnimProgress);
@@ -252,28 +249,10 @@ void zap::TimeClock::executeState_Collecting() {
 
 void zap::TimeClock::finalizeState_Collecting() { }
 
-/** STATE: Idle */
-void zap::TimeClock::initializeState_Idle() {
-    tk::println(":3 Idle");
-}
-
-void zap::TimeClock::executeState_Idle() { 
-    // check if re-enabled
-    // if (SwitchFlagMgr::instance()->isActivated(mReactivationEvent)) {
-    //     changeState(StateID_Active);
-    // }
-}
-
-void zap::TimeClock::finalizeState_Idle() { }
-
-
 /** TODO
  * Movement controller 🔄 test
  * Event activation (SwitchFlagMgr) 🔄 test
- * Respawning (based on event activation) ❗️ figure this out lol 
- * spin model faster or slower based on time
  * Add an alternative "simple" animation, similar to points text ui or maybe sparkles at the timer ui
  * Badclock no collect animation allowed in spritedata
  * Fake timeclock: RP_ObakeDoor_Disapp or RP_Poltergeist_Disapp, SFX: SE_EMY_FIRE_SNAKE_EXTINCT or boo laugh, how does it look?
- * global spin sync
  */
