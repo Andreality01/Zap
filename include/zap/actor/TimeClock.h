@@ -43,7 +43,12 @@ private:
 
     bool mDisableSfx;
 
-    EffectObj mEffect;
+    bool mUseBonusAnim;
+    bool mUseCollectAnim;
+
+    EffectObj mSparkleEffect;
+    EffectObj mPulseEffect;
+    sead::Color4f mPulseColor;
 
     s16 mTimeSelectionDelta;
 

@@ -69,6 +69,8 @@ zap::TimeClock::TimeClock(const ActorCreateParam& param)
     , mSmallClock(false)
     , mGreenTex(false)
     , mDisableSfx(false)
+    , mUseBonusAnim(false)
+    , mUseCollectAnim(false)
 { }
 
 ActorBase::Result zap::TimeClock::create() {
@@ -93,7 +95,6 @@ ActorBase::Result zap::TimeClock::create() {
     // bad clock
     mBadClock = red::SpriteUtil::getNybble13(this);
     
-    
     // set color
     mGreenTex = (mTimeSelectionDelta >= 30 && !mBadClock);
     
@@ -106,9 +107,13 @@ ActorBase::Result zap::TimeClock::create() {
     // pause it 
     mModel->getTexAnim(0)->getFrameCtrl().setRate(0.0f);
 
-
     // disable sfx
     mDisableSfx = red::SpriteUtil::getNybble9(this);
+
+    // use collect anim
+    mUseBonusAnim = red::SpriteUtil::getNybble1(this);
+    // use bonus anim
+    mUseCollectAnim = red::SpriteUtil::getNybble2(this);
     
     // Movement setup
     const u8 nybble20 = red::SpriteUtil::getNybble20(this);
@@ -123,6 +128,15 @@ ActorBase::Result zap::TimeClock::create() {
     mReactivationEvent = (red::SpriteUtil::getNybble5(this) << 4) | red::SpriteUtil::getNybble6(this);
     mCollectionEvent = (red::SpriteUtil::getNybble7(this) << 4) | red::SpriteUtil::getNybble8(this);
     
+    // Setup effects
+    if (mBadClock) {
+        mPulseColor = { 10.0f, 0.0f, 0.0f, 1.0f };
+    } else if (mGreenTex) {
+        mPulseColor = { 0.2f, 10.0f, 0.1f, 1.0f };
+    } else { // blue
+        mPulseColor = { 1.0f, 1.0f, 2.0f, 0.0f };
+    }
+
     changeState(StateID_Active);
 
     updateModel(); // make sure it appears on the first frame
@@ -137,6 +151,9 @@ bool zap::TimeClock::execute() {
     updateModel();
 
     executeState();
+
+    // update the effect color
+    mPulseEffect.setColor(mPulseColor);
 
     return true;
 }
@@ -153,7 +170,10 @@ void zap::TimeClock::updateModel() const {
 void zap::TimeClock::collect(s8 player) {
     if (isState(StateID_Active)) {
         tk::println("timeclock::collect (active)");
-        SwitchFlagMgr::instance()->set(mCollectionEvent, 0, true);
+        if (mCollectionEvent != 0)  {
+            // an event is set
+            SwitchFlagMgr::instance()->set(mCollectionEvent - 1, 0, true);
+        }
 
         removeCollisionCheck();
         setPlayerNo(player);
@@ -171,7 +191,7 @@ void zap::TimeClock::initializeState_Active() {
 }
 
 void zap::TimeClock::executeState_Active() {
-    //* this can only be speed 0.5 or 1.0 because the angle wraps around, so it will teleport if it's not a full rotation (or faking it with half)
+    //* angle overflows every rotation, but we can get away with exactly 0.5x (180 degrees) because the model is symmetrical
     mAngle.y() = CoinOrigin::instance()->getCoinAngle() * (mBadClock ? -0.5f : 0.5f);
 
     sead::Vector3f scale = sead::Vector3f(0.7f, 0.7f, 0.7f);
@@ -179,13 +199,20 @@ void zap::TimeClock::executeState_Active() {
 
     EffectID effect = (mBadClock || !mGreenTex) ? RP_RingRed : RP_RingGreen;
     
-    mEffect.createEffect(effect, &mPos, nullptr, mSmallClock ? &scaleSmall : &scale);
+    mSparkleEffect.createEffect(effect, &mPos, nullptr, mSmallClock ? &scaleSmall : &scale);
     
     if (!mBadClock && !mGreenTex) // blue clock needs color change since there's no blue ring effect
-        mEffect.setColor({ 0.0f, 1.0f, 6.0f, 1.0f });
+        mSparkleEffect.setColor({ 0.2f, 2.0f, 6.0f, 1.0f });
 
     // Remove the ring glow from the coin ring effect emitter so it just uses the sparkles
-    mEffect.setVisible(false, 2);
+    mSparkleEffect.setVisible(false, 2);
+
+    //TODO: drctouch effect
+    // if (CoinOrigin::instance()->getCoinAngle() == 0) {
+    //     mPulseEffect.kill();
+    //     mPulseEffect.createEffect(RP_UI_DRC_Touch, &mPos, nullptr, &scale);
+    //     mPulseEffect.setColor(mPulseColor);
+    // }
 }
 
 void zap::TimeClock::finalizeState_Active() { }
@@ -195,7 +222,7 @@ void zap::TimeClock::initializeState_Collecting() {
     tk::println(":3 Collecting");
 
     // Sound
-    if (!mDisableSfx) {
+    if (!mDisableSfx && !mUseBonusAnim) { // bonustime has its own sound already
         if (mBadClock) {
             GameAudio::getAudioObjMap()->startSound("SE_MG_CM_PANEL_NG", mPos);
         } else {
@@ -207,24 +234,27 @@ void zap::TimeClock::initializeState_Collecting() {
         }
     }
 
-    bool useBonusAnim = red::SpriteUtil::getNybble1(this);
-
     s16 time = mBadClock ? -mTimeSelectionDelta : mTimeSelectionDelta;
-    if (useBonusAnim) {
-        CourseTimer::instance()->setBonusTime(time);
-        CourseTask::instance()->doBonusTime(mPlayerNo);
+    bool timeDepleted = mBadClock && (static_cast<s32>(CourseTimer::fromUnits(CourseTimer::instance()->getTime())) - static_cast<s32>(mTimeSelectionDelta) <= 0);
+    if (!timeDepleted) {
+        if (mUseBonusAnim) {
+            // bonus time handles time
+            CourseTimer::instance()->setBonusTime(time);
+            CourseTask::instance()->doBonusTime(mPlayerNo);
+        } else {
+            // add the time
+            CourseTimer::instance()->addTimeLimitSeconds(time);
+        }
     } else {
-        // add the time
-        CourseTimer::instance()->addTimeLimitSeconds(time);
+        CourseTimer::instance()->setTimer(0);
     }
     
     // smallclock scale
     sead::Vector3f effectScale = sead::Vector3f(1.8f, 1.8f, 1.8f);
     EffectID collectEffect = mBadClock ? RP_CoinRedGet : (mGreenTex ? RP_CoinGreenGet : RP_CoinBlueGet);
     EffectCreateUtil::createEffect(collectEffect, &mPos, nullptr, mSmallClock ? nullptr : &effectScale); // dont enlarge the scale for small clock
-
-    bool useCollectAnim = red::SpriteUtil::getNybble2(this);
-    if (!useCollectAnim || mBadClock) { // Don't use collect animation
+    
+    if (!mUseCollectAnim || mBadClock) { // Don't use collect animation
         deleteActor(true);
     } // use collect animation: continue to collecting state execute; plays anim
 }
@@ -242,9 +272,6 @@ void zap::TimeClock::executeState_Collecting() {
     mPos.y += yOffset;
 
     mAngle.y() += sead::Mathf::deg2idx(mBadClock ? -30.0f : 30.0f);
-
-    // effects that run as collect anim plays
-    mEffect.createEffect(RP_FlagPass_1, &mPos, nullptr);
 }
 
 void zap::TimeClock::finalizeState_Collecting() { }
