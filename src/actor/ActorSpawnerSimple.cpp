@@ -11,7 +11,21 @@
 
 SEAD_RTTI_OVERRIDE_IMPL(zap::ActorSpawnerSimple, Actor)
 
-Profile* zap::ActorSpawnerSimple::sProfile = zap::getRegistrar()->newProfile<zap::ActorSpawnerSimple>("actor_spawner_simple").build();
+const ActorCreateInfo zap::ActorSpawnerSimple::cCreateInfo = {
+    .offset_x = 0, .offset_y = 0,
+    .spawn_range = {
+        .offset_x = 0, .offset_y = 0,
+        .half_size_x = 0, .half_size_y = 0
+    },
+    .cull_range = { 
+        .up = 0, .down = 0, .left = 0, .right = 0
+    },
+    .flag = ActorCreateInfo::cFlag_IgnoreSpawnRange
+};
+
+Profile* zap::ActorSpawnerSimple::sProfile = zap::getRegistrar()->newProfile<zap::ActorSpawnerSimple>("actor_spawner_simple")
+    .createInfo(&cCreateInfo)
+    .build();
 
 zap::ActorSpawnerSimple::ActorSpawnerSimple(const ActorCreateParam& param)
     : Actor(param)
@@ -54,7 +68,7 @@ bool zap::ActorSpawnerSimple::execute() {
     
     if (event && !mPrevFrameEvent) {
         ActorCreateParam child;
-        child.profile = Profile::get(mSpawnProfileID);
+        child.profile = red::ProfileEx::get(mSpawnProfileID);
 
         const ActorCreateInfo& info = child.profile->getActorCreateInfo();
         child.position = mPos - sead::Vector3f(info.offset_x, info.offset_y, 0.0f); // account for spawn offs

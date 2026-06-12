@@ -170,6 +170,32 @@ class SpriteImage_StringBank(SLib.SpriteImage_Static):
     def loadImages():
         SLib.loadIfNotInImageCache('StringBank', 'string_bank.png')
 
+class SpriteImage_ActorSpawner(SLib.SpriteImage_Static):
+    def __init__(self, parent):
+        super().__init__(
+            parent,
+            4.0,
+            ImageCache['ActorSpawner'],
+            (0, 0),
+        )
+
+    @staticmethod
+    def loadImages():
+        SLib.loadIfNotInImageCache('ActorSpawner', 'spawn.png')
+
+class SpriteImage_NybbleBank(SLib.SpriteImage_Static):
+    def __init__(self, parent):
+        super().__init__(
+            parent,
+            4.0,
+            ImageCache['NybbleBank'],
+            (0, 0),
+        )
+
+    @staticmethod
+    def loadImages():
+        SLib.loadIfNotInImageCache('NybbleBank', 'nybble_bank.png')
+
 ImageClasses = {
     "zap:cataquack": SpriteImage_Cataquack,
     "zap:biddybud": SpriteImage_ParaBiddybud,
@@ -181,4 +207,7 @@ ImageClasses = {
     "zap:donut_block": SpriteImage_DonutBlock,
     "zap:frozen_donut_block": SpriteImage_FrozenDonutBlock,
     "zap:string_bank": SpriteImage_StringBank,
+    "zap:actor_spawner_simple": SpriteImage_ActorSpawner,
+    "zap:actor_spawner_ex": SpriteImage_ActorSpawner,
+    "zap:nybble_bank": SpriteImage_NybbleBank,
 }

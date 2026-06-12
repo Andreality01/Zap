@@ -293,7 +293,7 @@
 			<entry value="1">Two</entry>
 			<entry value="2">Three</entry>
 		</layer>
-		<initialstate title="Bank ID" type="value" category="behavior" id_type="string_bank"/>
+		<initialstate title="String Bank ID" type="value" category="behavior" id_type="string_bank"/>
 	</sprite>
 	
 	<sprite string_id="zap:actor_spawner_simple" name="Actor Spawner (Simple)">
@@ -325,5 +325,23 @@
 		<value nybble="21" title="Child Nybble 21"/>
 		<layer mask="15" type="value" title="Child Nybble 22"/>
 		<layer mask="240" type="value" title="Child Nybble 23"/>
+	</sprite>
+	
+	<sprite string_id="zap:nybble_bank" name="Nybble Bank" notes="Empty actor which simply holds data for use by Actor Spawners">
+	</sprite>
+
+	<sprite string_id="zap:actor_spawner_ex" name="Actor Spawner (Extended)" notes="An advanced version of the Actor Spawner with more capabilities. Use a Nybble Bank placed one tile to the right of this actor to link it up and configure settings for the spawned actor.">
+		<value nybble="1-2" title="Triggering Event ID" id_type="event" category="events"/>
+		<list nybble="5" title="ID Type" category="behavior">
+			<entry value="0">Sprite ID</entry>
+			<entry value="1">Profile ID</entry>
+			<entry value="2">String ID</entry>
+		</list>
+		
+		<value nybble="6-8" title="Sprite ID" category="behavior" requirednybble="5" requiredval="0"/>
+		<value nybble="6-8" title="Profile ID" category="behavior" requirednybble="5" requiredval="1"/>
+		<value nybble="6" title="String Bank ID" comment="ID to link with a String Bank containing the namespaced string ID of the actor to spawn." id_type="string_bank" category="behavior" requirednybble="5" requiredval="2"/>
+		
+		<checkbox nybble="9" title="Multi-use" category="behavior"/>
 	</sprite>
 </sprites>
