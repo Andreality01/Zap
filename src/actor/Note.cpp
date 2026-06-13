@@ -61,9 +61,9 @@ zap::Note::Note(const ActorCreateParam& param)
 ActorBase::Result zap::Note::create() {
     tk::print("Note created\n");
 
-    mModel = AnimModel::create("note", "note", 0, 1);
-    mModel->playTexAnim("rainbow");
-    mModel->getTexAnim(0)->getFrameCtrl().setPlayMode(FrameCtrl::cMode_Repeat); // TODO: Check if this is necessary, it might repeat by default
+    mModel = AnimModel::create("note", "note", 4, 0, 1);
+    mModel->playTexSrtAnim("anim_color");
+    mModel->playSklAnim("Wait");
     mScale = sead::Vector3f(cScaleFactor, cScaleFactor, cScaleFactor);
 
     mCollisionCheck.set(this, cCollisionData);
