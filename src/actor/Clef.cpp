@@ -76,9 +76,9 @@ ActorBase::Result zap::Clef::create() {
     tk::println("Creating clef");
  
     // Model setup
-    mClefModel = AnimModel::create("clef", "clef", 0, 1);
-    mClefModel->playTexAnim("rainbow");
-    mClefModel->getTexAnim(0)->getFrameCtrl().setPlayMode(FrameCtrl::cMode_Repeat); // TODO: Check if this is necessary, it might repeat by default
+    mClefModel = AnimModel::create("clef", "clef", 3, 0, 1);
+    mClefModel->playTexSrtAnim("anim_color");
+    mClefModel->playSklAnim("Wait");
     
     // Positioning
     mScale = sead::Vector3f(cScaleFactor, cScaleFactor, cScaleFactor);
@@ -176,7 +176,7 @@ bool zap::Clef::execute() {
     
     mTime++;
 
-    f32 yOffset;
+    f32 yOffset = 0.0f;
 
     if (mCollecting) {
         mCollectAnimProgress += 1.0f / cCollectAnimDuration;
@@ -203,16 +203,13 @@ bool zap::Clef::execute() {
             mCollecting = false;
             mCollected = true;
         }
-    } else {
-        // bobbing
-        yOffset = sead::Mathf::sin(mTime * (1.0f / 60.0f)) * 6.0f;
     }
 
     mPos.y += yOffset;
     
     if (!mCollected) {
         updateModel();
-        mEffect1.createEffect(RP_Mario_Star_3, &mPos, nullptr/*, &effectScale*/);
+        //mEffect1.createEffect(RP_Mario_Star_3, &mPos, nullptr/*, &effectScale*/);
     }
 
     return true;
@@ -226,7 +223,6 @@ bool zap::Clef::draw() {
 }
 
 void zap::Clef::updateModel() {
-    // update position using a pos member so the actual actor pos can get modified by the movement controller
     mClefModel->update(mPos, mAngle, mScale);
 }
 
