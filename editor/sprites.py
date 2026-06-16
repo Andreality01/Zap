@@ -1,5 +1,5 @@
 # Zap
-# Custom Pyamoto sprites.py Module
+# This file contains code for displaying images of sprites in Pyamoto
 
 from PyQt5 import QtCore
 Qt = QtCore.Qt
