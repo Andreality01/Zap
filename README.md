@@ -1,7 +1,7 @@
 # Zap
 
 ## Overview
-**Zap** (*Zenith Actor Pack*) is a mod that adds a collection of high-quality enemies, mechanics, and utility actors into New Super Mario Bros. U for modders to use and developers to learn from.
+**Zap** (*Zenith Actor Pack*) is a **New Super Mario Bros. U** mod that adds a collection of high-quality enemies, mechanics, and utility actors for modders to use and developers to learn from.
 
 ### For Modders
 - Download the **`bundle`** from the [latest release](https://github.com/Zenith-Team/Zap/releases/latest) and extract it to your mod folder, merging the `content` and `code` folders into your project. The actors will now be available in-game.
