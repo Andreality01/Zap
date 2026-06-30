@@ -1,0 +1,67 @@
+name: Bug Report
+description: Create a bug report to help us improve
+title: "Enter a title for the bug report here"
+labels: bug
+body:
+  - type: markdown
+    id: md_readme
+    attributes:
+      value: |
+        If you discovered a bug you can report it here. Please make sure of the following first:
+        - You are using the [**latest version**](https://github.com/Zenith-Team/Zap/releases/latest) of Zap.
+        - The problem isn't already mentioned on the [issue tracker](https://github.com/Zenith-Team/Zap/issues).
+  - type: textarea
+    id: current_behavior
+    attributes:
+      label: Current Behavior
+      description: "What the bug is, in a brief description"
+    validations:
+      required: true
+  - type: textarea
+    id: expected_behavior
+    attributes:
+      label: Expected Behavior
+      description: "What did you expect to happen?"
+    validations:
+      required: true
+  - type: textarea
+    id: steps_to_reproduce
+    attributes:
+      label: Steps to Reproduce
+      description: "How to reproduce the issue"
+    validations:
+      required: true
+  - type: textarea
+    id: sys_info
+    attributes:
+      label: System Info (Optional)
+      description: "Tell us about your environment"
+      placeholder: |
+        Info
+        OS: Windows 10
+        GPU: NVIDIA GeForce RTX 4090
+        Cemu/Aroma Version: 2.7
+        Telkin Version: 1.0.0
+        Zap Version: 1.0.0
+      value: |
+        OS: 
+        GPU: 
+        Cemu/Aroma Version: 
+        Telkin Version: 
+        Zap Version: 
+  - type: textarea
+    id: loaded_mods
+    attributes:
+      label: Mods Loaded (Optional)
+      description: |
+        Any other mods that were loaded. You can leave this empty if you were playing with only Zap.
+    validations:
+      required: false
+  - type: textarea
+    id: logs_files
+    attributes:
+      label: "Cemu Log (Optional)"
+      description: |
+        "Attach `log.txt` from your Cemu folder (*File > Open Cemu folder*). It is helpful to enable crash dumps (Lite) and set the game profile to Single-Core Interpreter.".
+    validations:
+      required: false
