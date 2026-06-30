@@ -35,5 +35,6 @@ tachyon launch US
 - [stupidestmodder](https://github.com/stupidestmodder)
 
 ## Special Thanks
+- Miguel - 3D Models
 - [Baron](https://github.com/BaronStijn) - Sprite Images
 - Tsuru Contributors ❤️
