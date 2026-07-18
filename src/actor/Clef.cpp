@@ -7,8 +7,16 @@
 #include <red/util/SpriteUtil.h>
 #include <effect/EffectID.h>
 #include <effect/EffectCreateUtil.h>
+#include <event/EventMgr.h>
+#include <player/PlayerMgr.h>
+#include <player/PlayerObject.h>
 
 SEAD_RTTI_OVERRIDE_IMPL(zap::Clef, ActorMultiState);
+
+CREATE_STATE_ID(zap::Clef, Waiting)
+CREATE_STATE_ID(zap::Clef, GameActive)
+CREATE_STATE_ID(zap::Clef, AnimateCollecting)
+CREATE_STATE_ID(zap::Clef, AnimateAppear)
 
 static constexpr f32 cScaleFactor = 0.17f;
 static constexpr f32 cCollectAnimDuration = 9.0f; // frames
@@ -41,12 +49,9 @@ const CC::CollisionData zap::Clef::cCollisionData = {
     .vs_damage = CC::cDamageFrom_All,
     .status = CC::cStatus_None,
     .callback = [](ActorCollisionCheck* cc_self, ActorCollisionCheck* cc_other) {
-        tk::println("Collision to clef by %u", cc_other->getOwner()->getActorType());
-            
         zap::Clef* self = cc_self->getOwner<zap::Clef>();
         if (self != nullptr) {
-            tk::println("Triggering collect!");
-            self->collect();
+            self->collect(cc_other->getOwner<PlayerObject>()->getPlayerNo());
         }
     }
 };
@@ -60,31 +65,30 @@ Profile* zap::Clef::sProfile = zap::getRegistrar()->newProfile<zap::Clef>("clef"
 zap::Clef::Clef(const ActorCreateParam& param)
     : ActorMultiState(param)
     , mClefModel(nullptr)
-    , mCollected(false)
-    , mCollecting(false)
-    , mCollectAnimProgress(0.0f)
-    , mBaseScale(0.0f)
     , mTime(0.0f)
-    , mStoredNoteCount(0)
-    , mFoundNoteCount(0)
-    , mCollectedNoteCount(0)
+    , mManagerID(0)
+    , mRewardID(0)
+    , mTimeLimit(0)
     , mScanAttempt(0)
-    , mNotes(nullptr)
+    , mReady(false)
+    , mAttemptsRemaining(0)
+    , mTargetNoteCount(0)
+    , mPhaseCount(0)
+    , mCurrentPhaseTimer(0)
+    , mActivePhaseID(0)
+    , mCollectedNoteCount(0)
+    , mStartCollectAnimTime(0)
+    , mGameWonEventID(0)
 { }
 
 ActorBase::Result zap::Clef::create() {
-    tk::println("Creating clef");
- 
     // Model setup
     mClefModel = AnimModel::create("clef", "clef", 3, 0, 1);
     mClefModel->playTexSrtAnim("anim_color");
-    mClefModel->playSklAnim("Wait");
     
     // Positioning
     mScale = sead::Vector3f(cScaleFactor, cScaleFactor, cScaleFactor);
 
-    mBaseScale = mScale.x;
-    
     // Movement setup
     const u8 nybble20 = red::SpriteUtil::getNybble20(this);
     if (nybble20 > cPos_KinokoLift) {
@@ -98,17 +102,23 @@ ActorBase::Result zap::Clef::create() {
     mCollisionCheck.set(this, cCollisionData);
     reviveCollisionCheck();
 
-    // Event IDs
-    mGameStartEventID = (red::SpriteUtil::getNybble8(this) << 4) | red::SpriteUtil::getNybble9(this);
-    mGameWonEventID = (red::SpriteUtil::getNybble10(this) << 4) | red::SpriteUtil::getNybble11(this);
-
     // Members
     mTargetNoteCount = (red::SpriteUtil::getNybble3(this) << 4) | red::SpriteUtil::getNybble4(this);
-    //tk::println("Targets %u", mTargetNoteCount);
+    
+    mPhaseCount = red::SpriteUtil::getNybble8(this);
+    if (mPhaseCount > cPhaseLimit) {
+        tk::fatal("Too many phases, please limit to 8");
+    } else if (mPhaseCount == 0) {
+        tk::fatal("Clef phase count starts at 1");
+    }
+
+    mTimeLimit = (red::SpriteUtil::getNybble6(this) << 4) | red::SpriteUtil::getNybble7(this);
     mManagerID = (red::SpriteUtil::getNybble1(this) << 4) | red::SpriteUtil::getNybble2(this);
-    //tk::println("Manager ID %u", mManagerID);
     mRewardID = red::SpriteUtil::getNybble5(this);
-    //tk::println("Reward ID %u", mRewardID);
+    mGameWonEventID = (red::SpriteUtil::getNybble10(this) << 4) | red::SpriteUtil::getNybble11(this);
+    mAttemptsRemaining = red::SpriteUtil::getNybble9(this);
+
+    changeState(StateID_Waiting);
     
     updateModel();
     
@@ -117,106 +127,88 @@ ActorBase::Result zap::Clef::create() {
 
 void zap::Clef::scanNotes() {
     mScanAttempt++;
-    tk::println("Scanning... attempt %u", mScanAttempt);
     if (mScanAttempt >= 4) {
         tk::fatal("Couldnt find notes after 3 attempts...");
     }
     
+    // find notes:
+    u32 foundNoteCount[cPhaseLimit] = { 0 };
     ActorMgr* actorMgr = ActorMgr::instance();
-    // find notes
     for (auto it = actorMgr->getActorBegin(); it != actorMgr->getActorEnd(); it++) {
         if (Note* note = sead::DynamicCast<Note>(*it)) {
             if (note->getManagerID() == mManagerID) {
-                mFoundNoteCount++;
-                tk::println("Found note %u of %u", mFoundNoteCount, mTargetNoteCount);
+                const u8 phase = note->getPhaseID();
+                if (phase >= mPhaseCount) {
+                    tk::fatal("Note phase was outside the Clef phase count");
+                    return;
+                }
+                foundNoteCount[phase]++;
+                //tk::println("Found note %u of %u for phase %u of %u", foundNoteCount[phase], mTargetNoteCount, phase + 1, mPhaseCount);
             }
         }
     }
     
-    // alloc
-    
-    u32 storedIndex = 0;
-    if (mFoundNoteCount == mTargetNoteCount) {
-        mNotes = new(mActorHeap) ActorUniqueID[mTargetNoteCount];
-        for (auto it = actorMgr->getActorBegin(); it != actorMgr->getActorEnd(); it++) {
-            if (Note* note = sead::DynamicCast<Note>(*it)) {
-                if (note->getManagerID() == mManagerID) {
-                    note->setParent(mActorUniqueID); // set the parent to this clef instance
-                    mNotes[storedIndex] = note->getActorUniqueID();
-                    storedIndex++;
-                    mStoredNoteCount++;
-                    tk::println("Stored note %u, found: %u", storedIndex, mStoredNoteCount);
-                }
-            }
+    // verification
+    for (u32 i = 0; i < mPhaseCount; i++) {
+        if (foundNoteCount[i] > mTargetNoteCount) {
+            tk::fatal("Too many notes found");
+            return;
         }
         
-        // all notes found!
+        if (foundNoteCount[i] != mTargetNoteCount) {
+            tk::println("Couldn't find all notes!: found only %u notes in phase %u", foundNoteCount[i], i);
+            return;
+        }
     }
-
-    tk::println("Target note count: %u", mTargetNoteCount);
-    tk::println("Found note count: %u", mFoundNoteCount);
-    tk::println("Stored note count: %u", mStoredNoteCount);
-    tk::println("Did find all notes?: %i", mStoredNoteCount == mTargetNoteCount);
-
-    if (mStoredNoteCount == mTargetNoteCount && mNotes != nullptr) {
-        tk::println("Success");
-    } else {
-        mFoundNoteCount = 0;
-        mStoredNoteCount = 0;
+    
+    // Allocate notes
+    for (u32 i = 0; i < mPhaseCount; i++) {
+        nNotes[i] = new(mActorHeap) ActorUniqueID[mTargetNoteCount];
     }
+    
+    u32 storedIndex[cPhaseLimit] =  { 0 };
+    for (auto it = actorMgr->getActorBegin(); it != actorMgr->getActorEnd(); it++) {
+        if (Note* note = sead::DynamicCast<Note>(*it)) {
+            if (note->getManagerID() == mManagerID) {
+                note->setParent(mActorUniqueID); // set the parent to this clef instance
+                const u8 phase = note->getPhaseID();
+                if (phase >= mPhaseCount) {
+                    tk::fatal("Note phase was outside the Clef phase count");
+                    return;
+                }
+                if (storedIndex[phase] >= mTargetNoteCount) {
+                    tk::fatal("Too many notes in phase");
+                    return;
+                }
+                
+                nNotes[phase][storedIndex[phase]] = note->getActorUniqueID();
+                storedIndex[phase]++;
+            }
+        }
+    }
+    
+    // all notes found!
+    // tk::println("Target note count per round: %u", mTargetNoteCount);
+    // for (u32 i = 0; i < cPhaseLimit; i++) {
+    //     tk::println("Phase %u found notes: %u", i, foundNoteCount[i]);
+    // }
+    mReady = true;
 }
 
 bool zap::Clef::execute() {
-    mMovementHandler.execute();
-    mPos = mMovementHandler.getPosition();
-
-    if (mNotes == nullptr) {
+    if (!mReady) {
         scanNotes();
     }
     
     mTime++;
 
-    f32 yOffset = 0.0f;
-
-    if (mCollecting) {
-        mCollectAnimProgress += 1.0f / cCollectAnimDuration;
-
-        // vertical collect movement
-        yOffset = sead::Mathf::sin(mCollectAnimProgress) * (cCollectAnimTiles * 16.0f); // 1 tile = 16 pos units
-
-        // angle
-        mAngle.y() += sead::Mathf::deg2idx(15.0f + (mCollectAnimProgress)); // 10 degrees per frame
-
-        // if (mCollectAnimProgress >= sead::Mathf::pi() / 1.5f) { // start late
-        //     mScale.x = sead::Mathf::lerp(mBaseScale, 0.0f, (mCollectAnimProgress - (sead::Mathf::pi() / 1.5f)) * 3.33f / sead::Mathf::pi()); // catch up
-        //     mScale.y = mScale.z = mScale.x;
-        // }
-
-        // Effect
-        sead::Vector3f effectScale = sead::Vector3f(0.25f, 0.25f, 0.25f);
-        //mEffect2.createEffect(RP_Coinedit_StarCoin_on, &mPos, nullptr, &effectScale);
-        //mEffect3.createEffect(RP_AssistBlock_MarkLine, &mPos, nullptr, &effectScale);
-        //mEffect4.createEffect(RP_CSelect_StarGate_Fall, &mPos, nullptr, &effectScale);
-
-
-        if (mCollectAnimProgress >= sead::Mathf::pi()) { // pi = 1 full wave (up then down)
-            mCollecting = false;
-            mCollected = true;
-        }
-    }
-
-    mPos.y += yOffset;
-    
-    if (!mCollected) {
-        updateModel();
-        //mEffect1.createEffect(RP_Mario_Star_3, &mPos, nullptr/*, &effectScale*/);
-    }
+    executeState();
 
     return true;
 }
 
 bool zap::Clef::draw() {
-    if (!mCollected)
+    if (!isState(StateID_GameActive))
         mClefModel->draw();
 
     return true;
@@ -226,83 +218,270 @@ void zap::Clef::updateModel() {
     mClefModel->update(mPos, mAngle, mScale);
 }
 
-void zap::Clef::collect() {
-    if (!isReady()) 
+void zap::Clef::collect(s8 playerNo) {
+    if (!mReady) 
         return;
 
-    if (mCollected || mCollecting)
-        return;
-
-    mCollecting = true;
-
-    GameAudio::getAudioObjMap()->startSound("SE_SYS_RED_RING", mPos);
-
-    // Set all music notes with this parent ID to state of collecting
-
-    //EffectCreateUtil::createEffect(RP_DRCStar_CountFlash, &mPos);
-    
-    for (u32 i = 0; i < mTargetNoteCount; i++) {
-        ActorUniqueID uniqueID = mNotes[i];
-        ActorBase* actorPtr = ActorMgr::instance()->getActorPtr(uniqueID);
-        if (actorPtr != nullptr) {
-            Note* note = static_cast<Note*>(actorPtr); // we static cast here because we already know its 100% a Note and its alive
-            note->changeState(Note::StateID_Active); 
-            //tk::println("Changed the state of a note");
-        } else {
-            //tk::println("Failed to lookup");
-        }
-    }
+    mCollectedPlayer = playerNo;
+    GameAudio::getAudioObjMap()->startSound("SE_BOSS_WENDY_RING_BOUND", mPos);
 
     removeCollisionCheck();
 
-    tk::println("Game started! triggering %u", mGameStartEventID);
-    SwitchFlagMgr::instance()->set(mGameStartEventID, 0, true);
+    changeState(StateID_AnimateCollecting);
+
+    // tk::println("Game started!");
 } 
 
-void zap::Clef::noteCollected() {
-    mCollectedNoteCount++;
-    tk::println("Collected %u", mCollectedNoteCount);
-
-    // TODO: store the count of notes collected and play a different pitch based on the # 
+void zap::Clef::setCurrentNotesState(const StateID& state) const {
+    if (mActivePhaseID >= mPhaseCount) {
+        return;
+    }
     
-    if (mCollectedNoteCount >= mTargetNoteCount) {
-        tk::println("Game won! triggering %u", mGameWonEventID);
-        SwitchFlagMgr::instance()->set(mGameWonEventID, 0, true);
-
-        // give powerup reward
-        // 0 - none,
-
-        if (mRewardID == 0 || mRewardID > 9)
-            return;
-        
-        // else reward a powerup
-        ActorCreateParam info;
-        info.param_0 = 0x6000000;
-        info.profile = Profile::get(cRewards[mRewardID - 1]);
-
-        ActorMgr::instance()->createImmediately(info); // 0 index
+    for (u32 i = 0; i < mTargetNoteCount; i++) {
+        ActorUniqueID uniqueID = nNotes[mActivePhaseID][i];
+        ActorBase* actorPtr = ActorMgr::instance()->getActorPtr(uniqueID);
+        if (actorPtr != nullptr) {
+            Note* note = static_cast<Note*>(actorPtr);
+            if (!note->isCollected() || state == Note::StateID_Active) {
+                note->changeState(state);
+            }
+        }
     }
 }
 
-// Todo: sound effect
-// Todo: when collect all effect: RP_CSelect_StarCoin_Open
+void zap::Clef::setAllNotesState(const StateID& state) const {
+    for (u32 phase = 0; phase < mPhaseCount; phase++) {
+        for (u32 i = 0; i < mTargetNoteCount; i++) {
+            ActorUniqueID uniqueID = nNotes[phase][i];
+            ActorBase* actorPtr = ActorMgr::instance()->getActorPtr(uniqueID);
+            if (actorPtr != nullptr) {
+                Note* note = static_cast<Note*>(actorPtr);
+                note->changeState(state);
+            }
+        }
+    }
+}
 
+void zap::Clef::noteCollected(Note* note) {
+    if (!isState(StateID_GameActive))
+        return;
 
-/***
- * 1. Timer logic (nybble)
-    * Retry (nybble)
-    * 
- * 2. Multiple rounds of notes
- * 4. Movement controller
- * 5. Animations & model
- * 6. Sound effects (timer, collection) //chord scale
- * 7. Event activation
- */
+    mCollectedNoteCount++;
 
+    // collect sfx
+    // TODO: pitch/note change
+    GameAudio::getAudioObjMap()->startSound("SE_OBJ_COIN_BOUND", note->getPos());
 
-/**
- * Event activation notes
- * 1. Game start (clef collected)
- * 2. Game won
- * 3. (future) phase shift
- */
+    if (mCollectedNoteCount >= mTargetNoteCount) {
+        
+        // reset state variables
+        mCollectedNoteCount = 0;
+        mActivePhaseID++;
+        mCurrentPhaseTimer = 0;
+        
+        // reset timer on phase switch
+        
+        if (mActivePhaseID >= mPhaseCount) {
+            // end game
+            // give powerup reward
+            
+            if (mRewardID != 0 && mRewardID <= 9) {
+                ActorCreateParam info{};
+                info.param_0 = 0x6000000; // set "Reward" spawn mode for item profile (nybble 6)
+                info.profile = Profile::get(cRewards[mRewardID - 1]);
+                
+                ActorMgr::instance()->createImmediately(info); // 0 index
+            }
+            
+            for (u32 phase = 0; phase < mPhaseCount; phase++) {
+                for (u32 i = 0; i < mTargetNoteCount; i++) {
+                    ActorUniqueID uniqueID = nNotes[phase][i];
+                    ActorBase* actorPtr = ActorMgr::instance()->getActorPtr(uniqueID);
+                    if (actorPtr != nullptr) {
+                        Note* n = static_cast<Note*>(actorPtr);
+
+                        // Only delete actors which are already done rendering so deletion isnt visible
+                        if (n->isState(Note::StateID_Idle)) {
+                            n->deleteActor(true);
+                        }
+                    }
+                }
+            }
+            
+            // Clapping
+            GameAudio::setClapSE();
+            // Win sfx
+            GameAudio::getAudioObjMap()->startSound("SE_SYS_CH_TARGET_MEDAL_UP", note->getPos());
+            
+            // Activate the event
+            SwitchFlagMgr::instance()->set(mGameWonEventID - 1, 0, true);
+
+            removeCollisionCheck();
+            deleteActor(true);
+            return;
+        } else {
+            // next phase
+            setCurrentNotesState(Note::StateID_Active);
+            // TODO: play the freeze frame again...?
+        }
+    }
+}
+
+/** STATE: Waiting */
+
+void zap::Clef::initializeState_Waiting() { 
+    reviveCollisionCheck();
+}
+
+void zap::Clef::executeState_Waiting() { 
+    updateModel();
+
+    mEffect1.setAlpha(0.4f);
+    mEffect1.createEffect(RP_Mario_Star_3, &mPos, nullptr/*, &effectScale*/);
+
+    // using a movement controller
+    if (mParamEx.course.movement_id != 0) { 
+        // TODO: continue following movement handler in idle state so its in the right pos on re-activation
+        mMovementHandler.execute();
+        mPos = mMovementHandler.getPosition();
+    } else {
+        // bobbing
+        f32 yOffset = sead::Mathf::sin(mTime * (1.0f / 45.0f)) * 0.05;
+        mPos.y += yOffset;
+    }
+}
+
+void zap::Clef::finalizeState_Waiting() { 
+    removeCollisionCheck();
+}
+
+/** STATE: GameActive */
+
+void zap::Clef::initializeState_GameActive() { }
+
+void zap::Clef::executeState_GameActive() { 
+    mCurrentPhaseTimer++;
+    
+    // Warning
+    // time (frames) > ((time limit (seconds) * 60 = frames) * 0.75 early warning)
+    const u32 warningTime = static_cast<u32>((mTimeLimit * 60) * 0.75f);
+    if (mCurrentPhaseTimer == warningTime) { // auto-determined "warning" time calculated from the time limit nybble
+        // just send signal to all notes (set a member) then the notes will flash
+        setCurrentNotesState(Note::StateID_AnimateExpiry);
+
+        const PlayerObject* collectedPlayer = PlayerMgr::instance()->getPlayerObject(mCollectedPlayer);
+        if (collectedPlayer != nullptr) {
+            GameAudio::getAudioObjMap()->startSound("SE_SYS_GREEN_COIN_TIMER1", collectedPlayer->getPos());
+        } else {
+            GameAudio::getAudioObjMap()->startSound("SE_SYS_GREEN_COIN_TIMER1", mPos);
+        }
+    }
+    
+    if (mCurrentPhaseTimer == (mTimeLimit * 60)) {
+        // game over
+        setCurrentNotesState(Note::StateID_AnimateDisappear);
+
+        if (mAttemptsRemaining == 0) {
+            // kill all notes
+            for (u32 phase = 0; phase < mPhaseCount; phase++) {
+                for (u32 i = 0; i < mTargetNoteCount; i++) {
+                    ActorUniqueID uniqueID = nNotes[phase][i];
+                    ActorBase* actorPtr = ActorMgr::instance()->getActorPtr(uniqueID);
+                    if (actorPtr != nullptr) {
+                        Note* n = static_cast<Note*>(actorPtr);
+
+                        if (n->isState(Note::StateID_Idle)) {
+                            n->deleteActor(true);
+                        }
+                    }
+                }
+            }
+
+            const PlayerObject* collectedPlayer = PlayerMgr::instance()->getPlayerObject(mCollectedPlayer);
+            if (collectedPlayer != nullptr) {
+                GameAudio::getAudioObjMap()->startSound("SE_SYS_GREEN_COIN_TIMER3", collectedPlayer->getPos());
+            } else {
+                GameAudio::getAudioObjMap()->startSound("SE_SYS_GREEN_COIN_TIMER3", mPos);
+            }
+            
+            // kill self
+            removeCollisionCheck();
+
+            deleteActor(true);
+        } else {
+            mAttemptsRemaining--;
+
+            GameAudio::getAudioObjMap()->startSound("SE_BOSS_WENDY_RING_DISAPP", mPos);
+
+            // Spawn a sfx at the player's position
+            const PlayerObject* collectedPlayer = PlayerMgr::instance()->getPlayerObject(mCollectedPlayer);
+            if (collectedPlayer != nullptr) {
+                GameAudio::getAudioObjMap()->startSound("SE_SYS_GREEN_COIN_TIMER3", collectedPlayer->getPos());
+            } else {
+                GameAudio::getAudioObjMap()->startSound("SE_SYS_GREEN_COIN_TIMER3", mPos);
+            }
+
+            changeState(StateID_AnimateAppear); 
+
+            // reset members
+            mTime = 0;
+            mCurrentPhaseTimer = 0;
+            mActivePhaseID = 0;
+            mCollectedNoteCount = 0;
+        }
+    }
+}
+
+void zap::Clef::finalizeState_GameActive() { }
+
+/** STATE: AnimateCollecting */
+
+void zap::Clef::initializeState_AnimateCollecting() { 
+    // summon phase notes
+    setCurrentNotesState(Note::StateID_Active);
+
+    mClefModel->playSklAnim("Got");
+    mClefModel->getSklAnim(0)->getFrameCtrl().setPlayMode(FrameCtrl::cMode_NoRepeat);
+
+    // freeze the game for x seconds
+    mFreezeEvent.freeze();
+    EventMgr::instance()->pushEvent(&mFreezeEvent);
+
+    mStartCollectAnimTime = 0;
+}
+
+void zap::Clef::executeState_AnimateCollecting() { 
+    updateModel();
+
+    mStartCollectAnimTime++;
+
+    if (mClefModel->getSklAnim(0)->getFrameCtrl().isStop()) {
+        if (mStartCollectAnimTime >= 115) {
+            changeState(StateID_GameActive);
+        }
+    }
+}
+
+void zap::Clef::finalizeState_AnimateCollecting() { 
+    mFreezeEvent.unfreeze();
+}
+
+/** STATE: AnimateAppear */
+
+void zap::Clef::initializeState_AnimateAppear() { 
+    mClefModel->playSklAnim("Appear");
+    mClefModel->getSklAnim(0)->getFrameCtrl().setPlayMode(FrameCtrl::cMode_NoRepeat);
+}
+
+void zap::Clef::executeState_AnimateAppear() { 
+    updateModel();
+
+    if (mClefModel->getSklAnim(0)->getFrameCtrl().isStop()) {
+        changeState(StateID_Waiting);
+    }
+}
+
+void zap::Clef::finalizeState_AnimateAppear() {
+    // reset notes
+    setAllNotesState(Note::StateID_Idle);
+}

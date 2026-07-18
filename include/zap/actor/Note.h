@@ -1,11 +1,11 @@
 #pragma once
 
 #include <telkin/Print.h>
-#include <zap/actor/Clef.h>
 #include <actor/ActorState.h>
 #include <actor/Actor.h>
 #include <actor/Profile.h>
 #include <graphics/AnimModel.h>
+#include <map_obj/ParentMovementMgr.h>
 
 namespace zap {
 
@@ -25,14 +25,24 @@ public:
     void updateModel();
     void setParent(ActorUniqueID parent) {
         mClefParent = parent;
-        tk::println("Hello I am a note and my parent is now set :3");
     }
-    void collect();
+
+    void collect(s8);
     void reset();
     
     [[nodiscard]]
-    u32 getManagerID() {
+    u8 getManagerID() const {
         return mManagerID;
+    }
+
+    [[nodiscard]]
+    u8 getPhaseID() const {
+        return mPhaseID;
+    }
+
+    [[nodiscard]]
+    bool isCollected() const {
+        return mCollected;
     }
 
     static const ActorCreateInfo cCreateInfo;
@@ -40,16 +50,22 @@ public:
 
     DECLARE_STATE_ID(Note, Idle)
     DECLARE_STATE_ID(Note, Active)
-    DECLARE_STATE_ID(Note, Collecting)
-    
+    DECLARE_STATE_ID(Note, AnimateCollecting)
+    DECLARE_STATE_ID(Note, AnimateAppear)
+    DECLARE_STATE_ID(Note, AnimateDisappear)
+    DECLARE_STATE_ID(Note, AnimateExpiry)
+
 private:
     AnimModel* mModel;
     
     ActorUniqueID mClefParent;
     
-    u32 mManagerID;
+    u8 mManagerID;
+    u8 mPhaseID;
 
     bool mCollected;
+
+    u32 mWarnTime;
 
     ParentMovementMgr mMovementHandler;
 };
