@@ -47,7 +47,9 @@
 	</sprite>
 	
 	<sprite string_id="zap:flybones" name="Fly Bones">
-	    
+	    <value nybble="5" title="Fly Distance" comment="In tiles." category="behavior"/>
+		<checkbox nybble="6" title="Start Rising" category="behavior"/>
+		<value nybble="7" title="Time between flight" comment="In real seconds." category="behavior"/>
 	</sprite>
 
 	<sprite string_id="zap:cataquack" name="Cataquack" notes="&lt;font color=&quot;cyan&quot;&gt; &lt;i&gt;To the skies!&lt;/i&gt; &lt;/font&gt;">

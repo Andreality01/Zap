@@ -1,10 +1,12 @@
 #include <zap/actor/FlyBones.h>
 #include <zap/Zap.h>
 #include <actor/ActorMgr.h>
+#include <red/util/SpriteUtil.h>
 
 SEAD_RTTI_OVERRIDE_IMPL(zap::FlyBones, Enemy)
 
-CREATE_STATE_ID(zap::FlyBones, Idle)
+CREATE_STATE_ID(zap::FlyBones, Waiting)
+CREATE_STATE_ID(zap::FlyBones, Flying)
 
 // Spawning data
 const ActorCreateInfo zap::FlyBones::cCreateInfo = {
@@ -47,13 +49,17 @@ const ActorCollisionCheck::CollisionData zap::FlyBones::cCollisionData = {
     .callback = &Enemy::normal_collcheck
 };
 
-// Main code
 zap::FlyBones::FlyBones(const ActorCreateParam& param)
     : Enemy(param)
     , mBodyModel(nullptr)
     , mWingsModel(nullptr)
     , mYoshiEatData(mActorUniqueID)
     , mChibiYoshiAwaData(mActorUniqueID)
+    , mFlyDistance(0)
+    , mRising(false)
+    , mWaitTimer(0)
+    , mTimerTarget(0)
+    , mStartY(param.position.y)
 { }
 
 ActorBase::Result zap::FlyBones::create() {
@@ -77,7 +83,16 @@ ActorBase::Result zap::FlyBones::create() {
     mChibiYoshiAwaDataPtr = &mChibiYoshiAwaData;
     mChibiYoshiAwaData.setAwaType(ChibiYoshiAwaData::cAwaType_Catch);
     
-    changeState(StateID_Idle);
+    // Setting: Fly Distance
+    mFlyDistance = red::SpriteUtil::getNybble5(this) * 16;
+    
+    // Setting: Start Rising
+    mRising = red::SpriteUtil::getNybble6(this);
+    
+    // Setting: Time between Flight
+    mTimerTarget = red::SpriteUtil::getNybble7(this) * 60;
+    
+    changeState(StateID_Waiting);
     
     calcMdl_Base();
     
@@ -183,14 +198,42 @@ bool zap::FlyBones::hitCallback_Fire(ActorCollisionCheck* cc_self, ActorCollisio
     return false; // immune
 }
 
-/** STATE: Idle */
+/** STATE: Waiting */
 
-void zap::FlyBones::initializeState_Idle() {
+void zap::FlyBones::initializeState_Waiting() {
+    mWaitTimer = 0;
+}
+
+void zap::FlyBones::executeState_Waiting() {
+    if (++mWaitTimer >= mTimerTarget) {
+        changeState(StateID_Flying);
+    }
+}
+
+void zap::FlyBones::finalizeState_Waiting() { }
+
+/** STATE: Flying */
+
+void zap::FlyBones::initializeState_Flying() {
     
 }
 
-void zap::FlyBones::executeState_Idle() {
-    
+void zap::FlyBones::executeState_Flying() {
+    if (mRising) {
+        mPos.y++;
+        
+        if (mPos.y - mStartY >= mFlyDistance) {
+            changeState(StateID_Waiting);
+        }
+    } else {
+        mPos.y--;
+        
+        if (mStartY - mPos.y >= mFlyDistance) {
+            changeState(StateID_Waiting);
+        }
+    }
 }
 
-void zap::FlyBones::finalizeState_Idle() { }
+void zap::FlyBones::finalizeState_Flying() {
+    mRising = !mRising;
+}

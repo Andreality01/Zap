@@ -34,13 +34,19 @@ public:
     static const ActorCreateInfo cCreateInfo;
     static const ActorCollisionCheck::CollisionData cCollisionData;
     
-    DECLARE_STATE_ID(FlyBones, Idle)
+    DECLARE_STATE_ID(FlyBones, Waiting)
+    DECLARE_STATE_ID(FlyBones, Flying)
 
 private:
     AnimModel* mBodyModel;
     AnimModel* mWingsModel;
     EnemyEatData mYoshiEatData;
     EnemyChibiYoshiAwaData mChibiYoshiAwaData;
+    u8 mFlyDistance;
+    bool mRising;
+    u16 mWaitTimer;
+    u16 mTimerTarget;
+    f32 mStartY;
 };
 
 } // namespace zap
