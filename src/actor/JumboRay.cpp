@@ -40,8 +40,10 @@ zap::JumboRay::JumboRay(const ActorCreateParam& param)
 
 ActorBase::Result zap::JumboRay::create() {
     // Model
-    mModel = AnimModel::create("manjirou", "manjirou", 2);
-    mModel->playSklAnim("look", 0);
+    mModel = AnimModel::create("manjirou", "manjirou", 2, 0, 3);
+    mModel->playSklAnim("wait", 0);
+    mModel->playTexSrtAnim("glass", 0);
+    mModel->playTexSrtAnim("wait", 1);
     
     // Save this for later
     mBaseY = mPos.y;
@@ -119,8 +121,10 @@ bool zap::JumboRay::execute() {
         GameAudio::getAudioObjEmy()->startSound("SE_SYS_CONTINUE_DONE", mPos); //! <-- works
         
         // play anim
-        mModel->playSklAnim("damage", 1);
+        mModel->playSklAnim("ridden", 1);
         mModel->getSklAnim(1)->getFrameCtrl().setPlayMode(FrameCtrl::cMode_NoRepeat);
+        mModel->playTexSrtAnim("ridden", 1);
+        mModel->getShuAnim(1)->getFrameCtrl().setPlayMode(FrameCtrl::cMode_NoRepeat);
     }
     
     // save the current state to compare next frame
