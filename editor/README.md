@@ -2,9 +2,17 @@
 > [!IMPORTANT]
 > This patch is ONLY compatible with the [Pyamoto](https://github.com/Zenith-Team/Pyamoto/releases/latest) level editor.
 
-## Installation
-* Copy these files into the `miyamotodata/patches` folder such that the final result is `Pyamoto/miyamotodata/patches/Zap/main.xml`.
-* Enable the patch under `File`->`Pyamoto Preferences`->`Game Setup`
+## One-time Installation
+1. Open Pyamoto preferences `File`->`Pyamoto Preferences`->`Game Setup` 
+
+#### Installation: Mod Users
+2. Click `+` -> `Download Patch From URL`, then paste `https://github.com/Zenith-Team/Zap`
+
+#### Installation: Developers
+2. Click `+` -> `Link Mod Folder`, then select this folder on your disk
+3. You can now make changes here which will now automatically update when you reload (`Area`->`Reload Actor Data` in pyamoto)
+
+<hr>
 
 The custom actors should now be available to search and place in your level. (Note that to view them in-game you must have the actual mod installed as well.)
 
