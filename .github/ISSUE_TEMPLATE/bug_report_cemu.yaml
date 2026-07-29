@@ -1,4 +1,4 @@
-name: Bug Report
+name: Bug Report (Cemu)
 description: Create a bug report to help us improve
 title: "Enter a title for the bug report here"
 labels: bug
@@ -37,18 +37,19 @@ body:
       label: System Info (Optional)
       description: "Tell us about your environment"
       placeholder: |
-        Info
         OS: Windows 10
         GPU: NVIDIA GeForce RTX 4090
         Cemu/Aroma Version: 2.7
         Telkin Version: 1.0.0
         Zap Version: 1.0.0
+        Game Edition/Region: NSMBU Standalone (US)
       value: |
         OS: 
         GPU: 
         Cemu/Aroma Version: 
         Telkin Version: 
         Zap Version: 
+        Game Edition/Region: 
   - type: textarea
     id: loaded_mods
     attributes:
