@@ -19,7 +19,7 @@ Want to make your own custom code? Check out the [RedCore Example Mod](https://g
 ## Compiling
 Install [Tachyon](https://github.com/Zenith-Team/Tachyon) (requires [Node.js](https://nodejs.org/) v24+)
 ```yml
-npm i -g https://github.com/Zenith-Team/Tachyon/releases/latest/download/Tachyon.tgz
+npm i -g --allow-remote=root https://github.com/Zenith-Team/Tachyon/releases/latest/download/tachyon.tgz
 ```
 Build and run the project for your region (example with `US`)
 ```rb
