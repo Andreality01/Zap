@@ -17,7 +17,7 @@
 Want to make your own custom code? Check out the [RedCore Example Mod](https://github.com/Zenith-Team/RedCore-Example-Mod) to quickly get started creating your own code mod. With Telkin, multiple mods can be loaded at once just by merging folders, so everyone can maintain their own code and share them independently.
 
 ## Compiling
-Install the [Tachyon SDK](https://github.com/Zenith-Team/Tachyon) (requires [Node.js](https://nodejs.org/) v24+)
+Install [Tachyon](https://github.com/Zenith-Team/Tachyon) (requires [Node.js](https://nodejs.org/) v24+)
 ```yml
 npm i -g https://github.com/Zenith-Team/Tachyon/releases/latest/download/Tachyon.tgz
 ```
